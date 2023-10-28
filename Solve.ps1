@@ -1,6 +1,8 @@
 param(
     [Parameter(Mandatory = $true, HelpMessage = "Please enter a day number from 1-25")]
-    [System.String]$DayNumber
+    [System.String]$DayNumber,
+    [Parameter(Mandatory = $true, HelpMessage = "Please enter a day number from 1-25")]
+    [System.String]$InputFilename
 )
 
 . .\Helpers.ps1;
@@ -8,8 +10,7 @@ param(
 try {
     # SOLVE FILE HERE
     $file = ".\Day$DayNumber\Day$DayNumber.ps1";
-    $arguments = "-InputFilename $($InputFilename)";
-    & "$file";
+    powershell -NoProfile -ExecutionPolicy Bypass -File "$file" -Inputfilename $InputFilename
 }
 catch {
     Handle-Error($_);
