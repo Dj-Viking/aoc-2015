@@ -34,7 +34,7 @@ class Stack {
     [System.Char]
     Pop() {
         $lastItem = $this.storage[-1];
-        $this.storage[-1] = $null;
+        $this.storage.Remove($lastItem) | Out-Null;
         return $lastItem;
     }
 
@@ -69,51 +69,81 @@ class Santa {
     $Floor = 1;
     
     [System.String]
-    $building = $($myInput);
+    $input = $($myInput);
+
+    [System.Collections.ArrayList]
+    $building = $( & {
+            $arrlist = [System.Collections.ArrayList]@();
+            foreach ($char in $myInput.ToCharArray()) {
+                $arrlist.Add($char) | Out-Null;
+            }
+            return $arrlist;
+        });
     
     [Stack]
     $parseStack = [Stack]::new();
     #EndRegion
     
-    #Region santa methods
-    [System.Void]
-    CheckFloor([char]$bracket, [System.Int64]$position) {
-        if ($bracket -eq $this.OpenBracket) {
-            $this.parseStack.Push($bracket);
-        }
-    }
-
-    [System.Void]
-    Debug() {
-        Write-Host $($this.parseStack);
-    }
-    #EndRegion
 
 }
 
-$santa = [Santa]::new();
 
 Function PartOne {
 
-    for ($position = 0; $position -lt $santa.building.Length; $position++) {
-        $bracket = $santa.building[$position];
+    $santa = [Santa]::new();
 
-        Write-Host "floor before move $($santa.Floor) position: $($position + 1) char $($bracket)";
-        $santa.CheckFloor($bracket, $position);
-        Write-Host "floor after  move $($santa.Floor) position: $($position + 1) char $($bracket)" -ForegroundColor Cyan;
+
+    for ($i = 0; $i -lt $santa.building.Count; $i++) {
+
+        $bracket = $santa.building[$i];
+        if ($bracket -eq $santa.OpenBracket) {
+            $santa.Floor += 1;
+        }
+        if ($bracket -eq $santa.CloseBracket) {
+            $santa.Floor -= 1;
+        }
+
     }
 
-
-    Write-Host "floor $($santa.Floor)";
+    $answer1 = $santa.Floor - 1;
 
     Write-Host "[INFO]: solving part one..." -ForegroundColor Cyan
     Write-Host "[INFO]: part one answer is $answer1" -ForegroundColor Green
 }
 Function PartTwo {
 
+    $santa = [Santa]::new();
+
+    Write-Host "what is santa $santa";
+
+    $santaposition = 0;
+
+    for ($position = 0; $position -lt $santa.building.Count; $position++) {
+        $bracket = $santa.building[$position];
+
+        Write-Host "floor before move $($santa.Floor) position: $($position + 1) char $($bracket)";
+        
+        if ($bracket -eq $santa.OpenBracket) {
+            $santa.Floor += 1;
+            $santa.parseStack.Push($bracket);
+        }
+        if ($bracket -eq $santa.CloseBracket) {
+            
+            $santa.Floor -= 1;
+
+            if ($santa.Floor -eq -1) {
+                $santaposition = $position;
+                break;
+            }
+
+        }
+
+        Write-Host "floor after  move $($santa.Floor) position: $($position + 1) char $($bracket)" -ForegroundColor Cyan;
+    }
+
     Write-Host "[INFO]: solving part two..." -ForegroundColor Cyan
-    Write-Host "[INFO]: part two answer is $answer2" -ForegroundColor Green
+    Write-Host "[INFO]: part two answer is $santaposition" -ForegroundColor Green
 }
 
 PartOne
-# PartTwo
+PartTwo
