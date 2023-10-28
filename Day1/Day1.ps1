@@ -13,42 +13,12 @@ param(
 [String]$answer2 = "answer goes here"
 [String]$myInput = ""
 
-Write-Host "what is input filename $($InputFilename)"
+Write-Host "what is input filename $($InputFilename)";
 
-. $PSScriptRoot\..\ReadInput.ps1
-. $PSScriptRoot\..\ParseLines.ps1
+. $PSScriptRoot\..\ReadInput.ps1;
+. $PSScriptRoot\..\ParseLines.ps1;
 
-$myInput = Read-Input $InputFilename $PSScriptRoot
-
-
-class Stack {
-    [System.Collections.ArrayList]
-    $storage = @();
-
-    #Region stack methods
-    [Void]
-    Push($item) {
-        $this.storage.Add($item) | Out-Null;
-    }
-
-    [System.Char]
-    Pop() {
-        $lastItem = $this.storage[-1];
-        $this.storage.Remove($lastItem) | Out-Null;
-        return $lastItem;
-    }
-
-    [System.Char]
-    Peek() {
-        return $this.storage[-1];
-    }
-
-    [System.Int64]
-    Size() {
-        return $this.storage.Count;
-    }
-    #EndRegion
-}
+$myInput = Read-Input $InputFilename $PSScriptRoot;
 
 class Santa {
 
@@ -80,8 +50,6 @@ class Santa {
             return $arrlist;
         });
     
-    [Stack]
-    $parseStack = [Stack]::new();
     #EndRegion
     
 
@@ -121,11 +89,10 @@ Function PartTwo {
     for ($position = 0; $position -lt $santa.building.Count; $position++) {
         $bracket = $santa.building[$position];
 
-        Write-Host "floor before move $($santa.Floor) position: $($position + 1) char $($bracket)";
+        # Write-Host "floor before move $($santa.Floor) position: $($position + 1) char $($bracket)";
         
         if ($bracket -eq $santa.OpenBracket) {
             $santa.Floor += 1;
-            $santa.parseStack.Push($bracket);
         }
         if ($bracket -eq $santa.CloseBracket) {
             
@@ -138,7 +105,7 @@ Function PartTwo {
 
         }
 
-        Write-Host "floor after  move $($santa.Floor) position: $($position + 1) char $($bracket)" -ForegroundColor Cyan;
+        # Write-Host "floor after  move $($santa.Floor) position: $($position + 1) char $($bracket)" -ForegroundColor Cyan;
     }
 
     Write-Host "[INFO]: solving part two..." -ForegroundColor Cyan
