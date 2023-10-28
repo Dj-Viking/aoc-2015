@@ -84,8 +84,6 @@ Function PartTwo {
 
     Write-Host "what is santa $santa";
 
-    $santaposition = 0;
-
     for ($position = 0; $position -lt $santa.building.Count; $position++) {
         $bracket = $santa.building[$position];
 
@@ -99,7 +97,7 @@ Function PartTwo {
             $santa.Floor -= 1;
 
             if ($santa.Floor -eq -1) {
-                $santaposition = $position;
+                $answer2 = $position;
                 break;
             }
 
@@ -109,7 +107,7 @@ Function PartTwo {
     }
 
     Write-Host "[INFO]: solving part two..." -ForegroundColor Cyan
-    Write-Host "[INFO]: part two answer is $santaposition" -ForegroundColor Green
+    Write-Host "[INFO]: part two answer is $answer2" -ForegroundColor Green
 }
 
 PartOne
