@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "dev": "tsc -b ./ --watch",
-        "solve": "node ./dist/index.js"
+        "solve": "sh solve.sh",
+        "solve-windows": "powershell -File solve.ps1"
     },
     "author": "",
     "license": "ISC",
