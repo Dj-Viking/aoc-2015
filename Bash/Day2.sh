@@ -2,6 +2,8 @@ set -e;
 #! /usr/bin/bash
 echo 'hello world'
 
+
+
 declare -a my_array=()
 # while read line; do
 #     my_array+=( "$line" )
@@ -12,12 +14,12 @@ while read line; do
 done < input.txt
 
 
-echo "${my_array[0]}"
+# echo "${my_array[0]}"
 
 #calculating the required wrapping paper for each gift a little easier: find the surface area of the box, which is 2*l*w + 2*w*h + 2*h*l
 sum=0
 for str in ${my_array[@]}; do
-    echo " line => $str"
+    # echo " line => $str"
 
     IFS='x'
     # Read the split words into an array 
@@ -40,18 +42,18 @@ for str in ${my_array[@]}; do
     two_hl_mul=$((2 * h * l))
     hl_area=$((h * l))
 
-    echo "two lw mul => $two_lw_mul"
-    echo "two wh mul => $two_wh_mul"
-    echo "two hl mul => $two_hl_mul"
+    # echo "two lw mul => $two_lw_mul"
+    # echo "two wh mul => $two_wh_mul"
+    # echo "two hl mul => $two_hl_mul"
     
     # got areas to compare
 
 
     arr=($lw_area $wh_area $hl_area)
 
-    echo "arr 0 => ${arr[0]}"
-    echo "arr 1 => ${arr[1]}"
-    echo "arr 2 => ${arr[2]}"
+    # echo "arr 0 => ${arr[0]}"
+    # echo "arr 1 => ${arr[1]}"
+    # echo "arr 2 => ${arr[2]}"
 
     # Performing Bubble sort 
     for ((i = 0; i<3; i++))
@@ -70,33 +72,29 @@ for str in ${my_array[@]}; do
         done
     done
 
-    echo "Array in sorted order :"
-    echo ${arr[*]}
+    # echo "Array in sorted order :"
+    # echo ${arr[*]}
 
-    for a in "${sorted[@]}"; do echo "$a"; done
-
-    echo "sorted 1 => ${arr[0]}"
-    echo "sorted 2 => ${arr[1]}"
-    echo "sorted 3 => ${arr[2]}"
+    # echo "sorted 1 => ${arr[0]}"
+    # echo "sorted 2 => ${arr[1]}"
+    # echo "sorted 3 => ${arr[2]}"
 
     smallestside=${arr[0]}
-    echo "smallestside as variable => $smallestside"
-    
-    echo "basic mother fukcing shit ADD smallestside $smallestside TO FUCKING SORTED[0] => ${sorted[0]}"
+    # echo "smallestside as variable => $smallestside"
 
-    echo "smallestside => $smallestside"
+    # echo "smallestside => $smallestside"
 
     combined=$(($two_lw_mul + $two_wh_mul + $two_hl_mul))
-    echo "combined => $combined"
+    # echo "combined => $combined"
 
     # ADD MIN SOMHOW WHAT THE FUCK WHY IS THIS SO HARD
     combined=$((combined + smallestside))
-    echo "combined + smallestside => $combined"
+    # echo "combined + smallestside => $combined"
 
     sum=$((sum + combined))
-    echo "sum after new sum => $sum"
+    # echo "sum after new sum => $sum"
 
 
 done
 
-echo "final sum => $sum"
+echo "PART 1 ANSWER => $sum"
