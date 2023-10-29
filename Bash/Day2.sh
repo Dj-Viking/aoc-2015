@@ -2,10 +2,7 @@ set -e;
 #! /usr/bin/bash
 echo 'hello world'
 
-function readinput {
-    something=$(cat input.txt);
-    echo $something;
-}
+. ./helpers.sh
 
 something=$(readinput);
 
