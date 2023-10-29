@@ -121,7 +121,6 @@ function move(x: number, y: number, locationMap: LocationMap) {
             } else if (direction === DirectionName.south) {
                 x_santa -= 0;
                 y_santa -= 1;
-                const pt = new Point(x_santa, y_santa);
                 move(x_santa, y_santa, santaMap);
             }
         } else {
@@ -129,22 +128,18 @@ function move(x: number, y: number, locationMap: LocationMap) {
             if (direction === DirectionName.east) {
                 x_robo += 1;
                 y_robo += 0;
-                const pt = new Point(x_robo, y_robo);
                 move(x_robo, y_robo, roboMap);
             } else if (direction === DirectionName.west) {
                 x_robo -= 1;
                 y_robo += 0;
-                const pt = new Point(x_robo, y_robo);
                 move(x_robo, y_robo, roboMap);
             } else if (direction === DirectionName.north) {
                 x_robo -= 0;
                 y_robo += 1;
-                const pt = new Point(x_robo, y_robo);
                 move(x_robo, y_robo, roboMap);
             } else if (direction === DirectionName.south) {
                 x_robo -= 0;
                 y_robo -= 1;
-                const pt = new Point(x_robo, y_robo);
                 move(x_robo, y_robo, roboMap);
             }
         }
