@@ -37,6 +37,15 @@ class LocationMap extends Map<
     { visited: number }
 > {}
 
+function move(x: number, y: number, locationMap: LocationMap) {
+    const pt = new Point(x, y);
+    if (!locationMap.has(pt.toString())) {
+        locationMap.set(pt.toString(), { visited: pt.visited });
+    } else {
+        locationMap.get(pt.toString())!.visited++;
+    }
+}
+
 (function main() {
     const locationMap = new LocationMap();
     const point = new Point(0, 0);
@@ -48,39 +57,19 @@ class LocationMap extends Map<
         if (direction === DirectionName.east) {
             x += 1;
             y += 0;
-            const pt = new Point(x, y);
-            if (!locationMap.has(pt.toString())) {
-                locationMap.set(pt.toString(), { visited: pt.visited });
-            } else {
-                locationMap.get(pt.toString())!.visited++;
-            }
+            move(x, y, locationMap);
         } else if (direction === DirectionName.west) {
             x -= 1;
             y += 0;
-            const pt = new Point(x, y);
-            if (!locationMap.has(pt.toString())) {
-                locationMap.set(pt.toString(), { visited: pt.visited });
-            } else {
-                locationMap.get(pt.toString())!.visited++;
-            }
+            move(x, y, locationMap);
         } else if (direction === DirectionName.north) {
             x -= 0;
             y += 1;
-            const pt = new Point(x, y);
-            if (!locationMap.has(pt.toString())) {
-                locationMap.set(pt.toString(), { visited: pt.visited });
-            } else {
-                locationMap.get(pt.toString())!.visited++;
-            }
+            move(x, y, locationMap);
         } else if (direction === DirectionName.south) {
             x -= 0;
             y -= 1;
-            const pt = new Point(x, y);
-            if (!locationMap.has(pt.toString())) {
-                locationMap.set(pt.toString(), { visited: pt.visited });
-            } else {
-                locationMap.get(pt.toString())!.visited++;
-            }
+            move(x, y, locationMap);
         }
     }
 
@@ -120,39 +109,20 @@ class LocationMap extends Map<
             if (direction === DirectionName.east) {
                 x_santa += 1;
                 y_santa += 0;
-                const pt = new Point(x_santa, y_santa);
-                if (!santaMap.has(pt.toString())) {
-                    santaMap.set(pt.toString(), { visited: pt.visited });
-                } else {
-                    santaMap.get(pt.toString())!.visited++;
-                }
+                move(x_santa, y_santa, santaMap);
             } else if (direction === DirectionName.west) {
                 x_santa -= 1;
                 y_santa += 0;
-                const pt = new Point(x_santa, y_santa);
-                if (!santaMap.has(pt.toString())) {
-                    santaMap.set(pt.toString(), { visited: pt.visited });
-                } else {
-                    santaMap.get(pt.toString())!.visited++;
-                }
+                move(x_santa, y_santa, santaMap);
             } else if (direction === DirectionName.north) {
                 x_santa -= 0;
                 y_santa += 1;
-                const pt = new Point(x_santa, y_santa);
-                if (!santaMap.has(pt.toString())) {
-                    santaMap.set(pt.toString(), { visited: pt.visited });
-                } else {
-                    santaMap.get(pt.toString())!.visited++;
-                }
+                move(x_santa, y_santa, santaMap);
             } else if (direction === DirectionName.south) {
                 x_santa -= 0;
                 y_santa -= 1;
                 const pt = new Point(x_santa, y_santa);
-                if (!santaMap.has(pt.toString())) {
-                    santaMap.set(pt.toString(), { visited: pt.visited });
-                } else {
-                    santaMap.get(pt.toString())!.visited++;
-                }
+                move(x_santa, y_santa, santaMap);
             }
         } else {
             // robo turn
@@ -160,38 +130,22 @@ class LocationMap extends Map<
                 x_robo += 1;
                 y_robo += 0;
                 const pt = new Point(x_robo, y_robo);
-                if (!roboMap.has(pt.toString())) {
-                    roboMap.set(pt.toString(), { visited: pt.visited });
-                } else {
-                    roboMap.get(pt.toString())!.visited++;
-                }
+                move(x_robo, y_robo, roboMap);
             } else if (direction === DirectionName.west) {
                 x_robo -= 1;
                 y_robo += 0;
                 const pt = new Point(x_robo, y_robo);
-                if (!roboMap.has(pt.toString())) {
-                    roboMap.set(pt.toString(), { visited: pt.visited });
-                } else {
-                    roboMap.get(pt.toString())!.visited++;
-                }
+                move(x_robo, y_robo, roboMap);
             } else if (direction === DirectionName.north) {
                 x_robo -= 0;
                 y_robo += 1;
                 const pt = new Point(x_robo, y_robo);
-                if (!roboMap.has(pt.toString())) {
-                    roboMap.set(pt.toString(), { visited: pt.visited });
-                } else {
-                    roboMap.get(pt.toString())!.visited++;
-                }
+                move(x_robo, y_robo, roboMap);
             } else if (direction === DirectionName.south) {
                 x_robo -= 0;
                 y_robo -= 1;
                 const pt = new Point(x_robo, y_robo);
-                if (!roboMap.has(pt.toString())) {
-                    roboMap.set(pt.toString(), { visited: pt.visited });
-                } else {
-                    roboMap.get(pt.toString())!.visited++;
-                }
+                move(x_robo, y_robo, roboMap);
             }
         }
         i++;
