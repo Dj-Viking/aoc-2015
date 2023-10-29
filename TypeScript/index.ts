@@ -1,6 +1,7 @@
 const { day3Input: fileText_ } = require("./lib");
 
 let fileText: string = fileText_;
+let example: string = "^>v<";
 enum Direction {
     "^" = "north",
     "v" = "south",
@@ -41,6 +42,7 @@ class Point {
     let x = 0;
     let y = 0;
     for (const direction of fileText.split("") as DirectionVal[]) {
+        // for (const direction of example.split("") as DirectionVal[]) {
         if (direction === DirectionName.east) {
             x += 1;
             y += 0;
@@ -79,4 +81,16 @@ class Point {
             }
         }
     }
+
+    const values = locationMap.values();
+
+    let morethanonce = 0;
+    for (let i = 0; i < locationMap.size; i++) {
+        const value = values.next().value;
+        if (value.visited >= 1) {
+            morethanonce++;
+        }
+    }
+
+    console.log("ANSWER PART 1", morethanonce);
 })();

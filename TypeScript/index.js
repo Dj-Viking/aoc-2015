@@ -1,6 +1,7 @@
 "use strict";
 const { day3Input: fileText_ } = require("./lib");
 let fileText = fileText_;
+let example = "^>v<";
 var Direction;
 (function (Direction) {
     Direction["^"] = "north";
@@ -34,6 +35,7 @@ class Point {
     let x = 0;
     let y = 0;
     for (const direction of fileText.split("")) {
+        // for (const direction of example.split("") as DirectionVal[]) {
         if (direction === DirectionName.east) {
             x += 1;
             y += 0;
@@ -79,4 +81,13 @@ class Point {
             }
         }
     }
+    const values = locationMap.values();
+    let morethanonce = 0;
+    for (let i = 0; i < locationMap.size; i++) {
+        const value = values.next().value;
+        if (value.visited >= 1) {
+            morethanonce++;
+        }
+    }
+    console.log("ANSWER PART 1", morethanonce);
 })();
