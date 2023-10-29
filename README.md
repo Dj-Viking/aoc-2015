@@ -5,3 +5,6 @@ what language will i pick this time???
 
 # Day 2:
 * Bourne Again Shell
+
+# Day 3:
+* TypeScript
