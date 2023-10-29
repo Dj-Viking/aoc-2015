@@ -82,12 +82,12 @@ class Point {
         }
     }
     const values = locationMap.values();
-    let morethanonce = 0;
+    let atleastOnce = 0;
     for (let i = 0; i < locationMap.size; i++) {
         const value = values.next().value;
         if (value.visited >= 1) {
-            morethanonce++;
+            atleastOnce++;
         }
     }
-    console.log("ANSWER PART 1", morethanonce);
+    console.log("ANSWER PART 1", atleastOnce);
 })();
