@@ -1,29 +1,82 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs"));
-const fileText = fs_1.default.readFileSync("input.txt", { encoding: "utf-8" });
+const { day3Input: fileText_ } = require("./lib");
+let fileText = fileText_;
 var Direction;
 (function (Direction) {
-    Direction["north"] = "north";
-    Direction["south"] = "south";
-    Direction["east"] = "east";
-    Direction["west"] = "west";
+    Direction["^"] = "north";
+    Direction["v"] = "south";
+    Direction["<"] = "east";
+    Direction[">"] = "west";
 })(Direction || (Direction = {}));
-class NorthPole {
-    constructor() {
-        // present delivered at start
-        this.presentsDelivered = 1;
-        this.previousDirection = null;
-        this.housepath = fileText;
-        this.pathArray = [];
-        this.pathArray = this.housepath.split("");
+var DirectionName;
+(function (DirectionName) {
+    DirectionName["north"] = "^";
+    DirectionName["south"] = "v";
+    DirectionName["east"] = ">";
+    DirectionName["west"] = "<";
+})(DirectionName || (DirectionName = {}));
+class Point {
+    constructor(x, y) {
+        this.x = 0;
+        this.y = 0;
+        this.visited = 1;
+        this.x = x || 0;
+        this.y = y || 0;
     }
-    main() {
-        console.log("hello north pole", this.pathArray);
+    toString() {
+        return `${this.x},${this.y}`;
     }
 }
-const northpole = new NorthPole();
-northpole.main();
+(function main() {
+    const locationMap = new Map();
+    const point = new Point(0, 0);
+    locationMap.set(point.toString(), { visited: point.visited });
+    let x = 0;
+    let y = 0;
+    for (const direction of fileText.split("")) {
+        if (direction === DirectionName.east) {
+            x += 1;
+            y += 0;
+            const pt = new Point(x, y);
+            if (!locationMap.has(pt.toString())) {
+                locationMap.set(pt.toString(), { visited: pt.visited });
+            }
+            else {
+                locationMap.get(pt.toString()).visited++;
+            }
+        }
+        else if (direction === DirectionName.west) {
+            x -= 1;
+            y += 0;
+            const pt = new Point(x, y);
+            if (!locationMap.has(pt.toString())) {
+                locationMap.set(pt.toString(), { visited: pt.visited });
+            }
+            else {
+                locationMap.get(pt.toString()).visited++;
+            }
+        }
+        else if (direction === DirectionName.north) {
+            x -= 0;
+            y += 1;
+            const pt = new Point(x, y);
+            if (!locationMap.has(pt.toString())) {
+                locationMap.set(pt.toString(), { visited: pt.visited });
+            }
+            else {
+                locationMap.get(pt.toString()).visited++;
+            }
+        }
+        else if (direction === DirectionName.south) {
+            x -= 0;
+            y -= 1;
+            const pt = new Point(x, y);
+            if (!locationMap.has(pt.toString())) {
+                locationMap.set(pt.toString(), { visited: pt.visited });
+            }
+            else {
+                locationMap.get(pt.toString()).visited++;
+            }
+        }
+    }
+})();
