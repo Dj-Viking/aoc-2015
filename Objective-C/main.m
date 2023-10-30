@@ -14,6 +14,7 @@ int main(int argc, const char **argv) {
     @autoreleasepool {
         NSLog(@"hello world");
         int i = 0;
+        bool part2 = true;
         for (;;) {
             NSString * mystr = @"iwrupvqb";
 
@@ -25,18 +26,38 @@ int main(int argc, const char **argv) {
             // NSLog(@" str => %@", md5);
 
             int zeros = 0;
-            for(int i = 0 ; i < 5; i++) {
-                if ([md5 characterAtIndex:i] == '0') {
-                    zeros++;
-                    // NSLog(@"ZEROS %d",zeros);
-                    if (zeros == 5) {
-                        break;
+            if (!part2) {
+                for(int i = 0 ; i < 5; i++) {
+                    if ([md5 characterAtIndex:i] == '0') {
+                        zeros++;
+                        // NSLog(@"ZEROS %d",zeros);
+                        if (zeros == 5) {
+                            break;
+                        }
                     }
                 }
-            }
-            if (zeros == 5) {
-                NSLog(@" str => %@ with => %@", md5, newstr);
-                break;
+                if (zeros == 5) {
+                    NSLog(@" str => %@ with => %@", md5, newstr);
+                    break;
+                }
+            } else {
+                for(int i = 0 ; i < 6; i++) {
+                    if ([md5 characterAtIndex:i] == '0') {
+                        zeros++;
+                        if (zeros >= 5) {
+                            NSLog(@"ZEROS %d",zeros);
+
+                        }
+                        if (zeros == 6) {
+                            break;
+                        }
+                    }
+                }
+                if (zeros == 6) {
+                    NSLog(@" str => %@ with => %@", md5, newstr);
+                    break;
+                }
+
             }
             i++;
         }
