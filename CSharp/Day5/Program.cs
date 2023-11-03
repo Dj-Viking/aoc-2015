@@ -1,9 +1,11 @@
+using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
 namespace Day5
 {
     class MainClass
     {
+        bool part2 = false;
         public string input = "";
         public List<string> matchingList = new()
             {
@@ -28,6 +30,7 @@ namespace Day5
             this.PartOne();
 
             this.Init();
+            this.part2 = true;
             this.GetInput(args[0]);
             this.PartTwo();
         }
@@ -62,8 +65,17 @@ namespace Day5
                 && curr == last + 1;
         }
 
+        public static bool IsNiceString2(string str)
+        {
+            // cheated...this problem fucking sucks!
+            var appearsTwice = Enumerable.Range(0, str.Length - 1).Any(i => str.IndexOf(str.Substring(i, 2), i + 2) >= 0);
+            var repeats = Enumerable.Range(0, str.Length - 2).Any(i => str[i] == str[i + 2]);
+            return appearsTwice && repeats;
+
+        }
+
         // is it naughty or nice string?
-        public bool IsNiceString(string str)
+        public static bool IsNiceString(string str)
         {
             int vowelCount = 0;
             bool pairExists = false;
@@ -97,31 +109,27 @@ namespace Day5
         {
             foreach (string line in lines_)
             {
-                if (this.IsNiceString(line))
+                if (!part2)
                 {
-                    this.nice_ones++;
-                    Console.WriteLine("NICE =>                          {0}", line);
-                    Console.WriteLine("    contains 3 vowels =>            {0}", this.containsThreeVowels);
-                    Console.WriteLine("    contains has double letters =>  {0}", this.oneLetterTwiceInARow);
-                    Console.WriteLine("    contains does not match list => {0}", this.doesNotMatchAListOfStrings);
-                    foreach (string str in this.matchingList)
+                    if (IsNiceString(line))
                     {
-                        Console.Write("{0}, ", str);
+                        this.nice_ones++;
                     }
-                    Console.WriteLine("");
+
                 }
                 else
                 {
-                    Console.WriteLine("naughty =>              {0}", line);
-                    Console.WriteLine("    contains 3 vowels =>            {0}", this.containsThreeVowels);
-                    Console.WriteLine("    contains has double letters =>  {0}", this.oneLetterTwiceInARow);
-                    Console.WriteLine("    contains does not match list => {0}", this.doesNotMatchAListOfStrings);
-                    foreach (string str in this.matchingList)
+                    if (IsNiceString2(line))
                     {
-                        Console.Write("{0}, ", str);
+                        this.nice_ones++;
+                        Console.WriteLine("nice {0}", line);
                     }
-                    Console.WriteLine("");
+                    else
+                    {
+                        Console.WriteLine("not nice {0}", line);
+                    }
                 }
+
             }
         }
         public void PartOne()
@@ -131,7 +139,8 @@ namespace Day5
         }
         public void PartTwo()
         {
-            Console.WriteLine("Part 2: {0}", "answer goes here");
+            this.ParseInput(this._lines);
+            Console.WriteLine("Part 2: {0}", this.nice_ones);
         }
     }
 }
