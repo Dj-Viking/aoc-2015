@@ -2,3 +2,6 @@ node_modules
 **/dist/*
 bin
 obj
+.vs
+Backup
+UpgradeLog.htm
