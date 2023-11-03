@@ -49,7 +49,7 @@ namespace Day5
             this._lines = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public static bool isVowel(char chr)
+        public static bool IsVowel(char chr)
         {
             return chr == 'a' || chr == 'e' || chr == 'i' || chr == 'o' || chr == 'u';
         }
@@ -85,7 +85,7 @@ namespace Day5
             for (int i = 0; i < chars.Length; i++)
             {
                 char current_char = chars[i];
-                if (isVowel(current_char))
+                if (IsVowel(current_char))
                 {
                     vowelCount++;
                 }
