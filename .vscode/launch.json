@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/CSharp/Day5/bin/Debug/net6.0/Day5.dll",
-            "args": ["sample.txt"],
+            "args": ["input.txt"],
             "cwd": "${workspaceFolder}/CSharp/Day5",
             "console": "internalConsole",
             "stopAtEntry": false

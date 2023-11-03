@@ -46,112 +46,69 @@ namespace Day5
             this._lines = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        public static bool isVowel(char chr)
+        {
+            return chr == 'a' || chr == 'e' || chr == 'i' || chr == 'o' || chr == 'u';
+        }
+
+        public static bool IsBadPair(char last, char curr)
+        {
+            return
+                (last == 'a' ||
+                last == 'c' ||
+                last == 'p' ||
+                last == 'x')
+
+                && curr == last + 1;
+        }
+
         // is it naughty or nice string?
         public bool IsNiceString(string str)
         {
-            // contains atleast 3 vowels
-            this.containsThreeVowels = false;
-            this.oneLetterTwiceInARow = false;
-            this.doesNotMatchAListOfStrings = false;
+            int vowelCount = 0;
+            bool pairExists = false;
 
-            // rule 1 contains three vowels
+            char last_char = ' ';
             char[] chars = str.ToCharArray();
-            int vowelsCount = 0;
-            foreach (char chr in chars)
+            for (int i = 0; i < chars.Length; i++)
             {
-                switch (chr)
+                char current_char = chars[i];
+                if (isVowel(current_char))
                 {
-                    case 'a':
-                        {
-                            vowelsCount++;
-                        }
-                        break;
-                    case 'e':
-                        {
-                            vowelsCount++;
-                        }
-                        break;
-                    case 'i':
-                        {
-                            vowelsCount++;
-                        }
-                        break;
-                    case 'o':
-                        {
-                            vowelsCount++;
-                        }
-                        break;
-                    case 'u':
-                        {
-                            vowelsCount++;
-                        }
-                        break;
+                    vowelCount++;
                 }
+
+                if (i > 0 && current_char == last_char)
+                {
+                    pairExists = true;
+                }
+
+                if (i > 0 && IsBadPair(last_char, current_char))
+                {
+                    return false;
+                }
+                last_char = current_char;
             }
 
-            if (vowelsCount >= 3)
-            {
-                containsThreeVowels = true;
-            }
-            //
-
-            // rule 2 one letter twice in a row appears at least once
-            int amountOfDoubleLetters = 0;
-            for (int i = 1; i < chars.Length - 1; i++)
-            {
-                char prev = chars[i - 1];
-                char curr = chars[i];
-                if (prev == curr)
-                {
-                    amountOfDoubleLetters++;
-                }
-            }
-            if (amountOfDoubleLetters >= 1)
-            {
-                oneLetterTwiceInARow = true;
-            }
-            //
-            // rule 3 string does not contain any group of disallowed strings
-            List<string> pairs = new();
-            for (int i = 1; i < chars.Length - 1; i++)
-            {
-                char prev = chars[i - 1];
-                char curr = chars[i];
-                string pair = $"{prev}{curr}";
-                pairs.Add(pair);
-            }
-            foreach (string pair in pairs)
-            {
-                foreach (string match in matchingList)
-                {
-                    if (pair != match)
-                    {
-                        doesNotMatchAListOfStrings = true;
-                    }
-                    else
-                    {
-                        doesNotMatchAListOfStrings = false;
-                        goto exitloop;
-                    }
-                }
-            }
-        exitloop:
-            //
-
-            return containsThreeVowels && oneLetterTwiceInARow && doesNotMatchAListOfStrings;
+            return vowelCount >= 3 && pairExists;
         }
 
         public void ParseInput(string[] lines_)
         {
             foreach (string line in lines_)
             {
-                if (IsNiceString(line))
+                if (this.IsNiceString(line))
                 {
                     this.nice_ones++;
                     Console.WriteLine("NICE =>                          {0}", line);
                     Console.WriteLine("    contains 3 vowels =>            {0}", this.containsThreeVowels);
                     Console.WriteLine("    contains has double letters =>  {0}", this.oneLetterTwiceInARow);
                     Console.WriteLine("    contains does not match list => {0}", this.doesNotMatchAListOfStrings);
+                    foreach (string str in this.matchingList)
+                    {
+                        Console.Write("{0}, ", str);
+                    }
+                    Console.WriteLine("");
                 }
                 else
                 {
