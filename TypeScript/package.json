@@ -6,14 +6,17 @@
     "scripts": {
         "dev": "tsc -b ./ --watch",
         "solve": "sh solve.sh",
+        "solve-6": "sh solve.sh 6",
         "solve-windows": "powershell -File solve.ps1"
     },
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "live-server": "1.2.2",
         "typescript": "^5.2.2"
     },
     "dependencies": {
+        "@types/live-server": "^1.2.2",
         "@types/node": "^20.8.9"
     }
 }
