@@ -1,4 +1,4 @@
-const DIM = 10;
+const DIM = 100;
 const DIMENSIONS_ = {
     HEIGHT: DIM,
     WIDTH: DIM,
@@ -62,29 +62,40 @@ class Main {
 
     private createLedStyle(): string {
         let styleContent = "";
+        let applyAnimation = false;
         for (let row = 0; row < this.DIMENSIONS.HEIGHT; row++) {
             for (let col = 0; col < this.DIMENSIONS.WIDTH; col++) {
                 styleContent += `
-                
-                    @keyframes cell-opacity-${col}-${row} {
-                        0% {
-                            background-color: black;
-                        }
+                    ${
+                        applyAnimation
+                            ? `
+                            @keyframes cell-opacity-${col}-${row} {
+                                0% {
+                                    background-color: black;
+                                }
 
-                        99.999% {
-                            background-color: red;
-                        }
-                    }
+                                99.999% {
+                                    background-color: red;
+                                }
+                            }
 
-                   .led-${col}-${row} {
-                        animation: cell-opacity-${col}-${row};
-                        animation-duration: ${2 * row || 1}s;
-                        animation-iteration-count: infinite;
-                        animation-direction: alternate;
-                        height: 10px;
-                        width: 10px;
-                        padding: 5px;
-                        margin: 10px;
+                        .led-${col}-${row} {
+                                animation: cell-opacity-${col}-${row};
+                                animation-duration: ${2 * row || 1}s;
+                                animation-iteration-count: infinite;
+                                animation-direction: alternate;
+                                height: 1px;
+                                width: 1px;
+                                padding: 2px;
+                            }
+                        `
+                            : `
+
+                            .led-${col}-${row} {
+                        
+                            }
+                            
+                        `
                     }
                 `;
             }
@@ -116,6 +127,15 @@ class Main {
             .grid-column {
                 display: flex;
                 flex-direction: row;
+            }
+
+            .grid-column > * {
+                margin: 1px;
+                height: 1px;
+                width: 1px;
+                padding: 1px;
+
+                background-color: red;
             }
         `;
         head.appendChild(style);
