@@ -3,6 +3,7 @@ const DIMENSIONS_ = {
     HEIGHT: DIM,
     WIDTH: DIM,
 } as const;
+const APPLY_ANIMATION = true;
 /**
  * @example
  * ```jsx
@@ -32,6 +33,7 @@ class Main {
         private span: HTMLParagraphElement = null as any,
         private timer: HTMLParagraphElement = null as any,
         private cols: GridColumn[] = [],
+        private readonly applyAnimation: boolean = APPLY_ANIMATION,
         private readonly DIMENSIONS: typeof DIMENSIONS_ = {
             HEIGHT: DIM,
             WIDTH: DIM,
@@ -62,12 +64,11 @@ class Main {
 
     private createLedStyle(): string {
         let styleContent = "";
-        let applyAnimation = false;
         for (let row = 0; row < this.DIMENSIONS.HEIGHT; row++) {
             for (let col = 0; col < this.DIMENSIONS.WIDTH; col++) {
                 styleContent += `
                     ${
-                        applyAnimation
+                        this.applyAnimation
                             ? `
                                 @keyframes cell-opacity-${col}-${row} {
                                     0% {
@@ -86,13 +87,14 @@ class Main {
                                         animation-direction: alternate;
                                         height: 1px;
                                         width: 1px;
-                                        padding: 2px;
+                                        padding: 1px;
+                                        margin: 1px;
                                     }
                             ` // end ?
                             : `
 
                                 .led-${col}-${row} {
-                            
+                                    
                                 }
                             
                             ` // end : applyAnimation
@@ -128,14 +130,20 @@ class Main {
                 display: flex;
                 flex-direction: row;
             }
-
-            .grid-column > * {
-                margin: 1px;
-                height: 1px;
-                width: 1px;
-                padding: 1px;
-
-                background-color: red;
+            ${
+                !this.applyAnimation
+                    ? `
+                .grid-column > * {
+                    margin: 1px;
+                    height: 1px;
+                    width: 1px;
+                    padding: 1px;
+    
+                    background-color: red;
+                }
+                
+                `
+                    : ""
             }
         `;
         head.appendChild(style);
