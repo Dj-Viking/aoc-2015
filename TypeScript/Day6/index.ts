@@ -69,35 +69,35 @@ class Main {
                     ${
                         applyAnimation
                             ? `
-                            @keyframes cell-opacity-${col}-${row} {
-                                0% {
-                                    background-color: black;
+                                @keyframes cell-opacity-${col}-${row} {
+                                    0% {
+                                        background-color: black;
+                                    }
+
+                                    99.999% {
+                                        background-color: red;
+                                    }
                                 }
 
-                                99.999% {
-                                    background-color: red;
-                                }
-                            }
-
-                        .led-${col}-${row} {
-                                animation: cell-opacity-${col}-${row};
-                                animation-duration: ${2 * row || 1}s;
-                                animation-iteration-count: infinite;
-                                animation-direction: alternate;
-                                height: 1px;
-                                width: 1px;
-                                padding: 2px;
-                            }
-                        `
+                                .led-${col}-${row} {
+                                        animation: cell-opacity-${col}-${row};
+                                        animation-duration: ${2 * row || 1}s;
+                                        animation-iteration-count: infinite;
+                                        animation-direction: alternate;
+                                        height: 1px;
+                                        width: 1px;
+                                        padding: 2px;
+                                    }
+                            ` // end ?
                             : `
 
-                            .led-${col}-${row} {
-                        
-                            }
+                                .led-${col}-${row} {
                             
-                        `
+                                }
+                            
+                            ` // end : applyAnimation
                     }
-                `;
+                `; // end styleContent
             }
         }
 
