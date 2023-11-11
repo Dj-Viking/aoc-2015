@@ -14,3 +14,9 @@ what language will i pick this time???
 
 # Day 5:
 * C#
+
+# Day 6:
+* (TODO) with Typescript using DOM to visualize the problem.
+
+# Day 7: 
+* Powershell
