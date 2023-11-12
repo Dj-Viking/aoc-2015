@@ -198,6 +198,9 @@ Function PartOne {
             $_ -match "AND|OR|LSHIFT|RSHIFT|NOT"
         };
 
+        # if the value getting assigned is a reference type
+        # then might have some pointing issues later...
+        # not sure yet.
         switch ($op) {
             "$($ops.AND.name)" {
                 $result = $heap.storage[$tokens[0]] -band $heap.storage[$tokens[2]]
