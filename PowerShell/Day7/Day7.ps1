@@ -15,7 +15,7 @@ $lines = Get-InputLines $myInput
 
 # wire connections can provide its signal to multiple destinations
 class Connections {
-
+    
 }
 class Heap {
     [System.Collections.Hashtable]
