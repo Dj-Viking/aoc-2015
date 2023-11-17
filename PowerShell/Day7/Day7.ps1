@@ -147,6 +147,21 @@ Function ExprHasValue {
 [System.Collections.ArrayList]$connectingTwoWiresList = @();
 [System.Collections.ArrayList]$exprsWithValue = @();
 
+
+# I think I really have to incrementally go through each expression that will 
+# actually yield some change other than 0 
+# because doing these bitwise operators on 0 will almost always just result in 0
+# thus nothing meaningful will really happen.
+# I think I have to go through which ever expressions
+# for example
+# 1: assigns a hard coded value to wire b
+# 2: find which expressions that include wire b and only evaluate those expressions next
+# 3: find which wires have values after number 2
+# 4: find which expressions that include those wires and only evaluate those expressions
+# 5: repeat until each expression in the input has been evaluated and remove those expressions
+#    from the list of expressions that have yet to be evaluated 
+
+# PROBABLY HAVE TO FUCKING START OVER AGAIN!!!!!!
 Function PartOne {
     [Ops]$ops = [Ops]::new();
     [Heap]$heap = [Heap]::new();
