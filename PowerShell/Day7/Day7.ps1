@@ -13,6 +13,37 @@ param(
 $myInput = Read-Input $InputFilename $PSScriptRoot
 $lines = Get-InputLines $myInput
 
+class Wire {
+    [bool]
+    $hasSignal = $false;
+
+    [uint16]
+    $value = 0;
+
+    [string]
+    $name = "";
+
+    Wire($name, $value) {
+        $this.name = $name;
+        $this.value = $value;
+    }
+}
+
+class Instruction {
+    [bool]
+    $wasCompleted = $false;
+
+    [string]
+    $instruction = "";
+
+    Instruction($instruction) {
+        $this.instruction = $instruction;
+    }
+}
+
+[System.Collections.ArrayList]
+$instructionList = [System.Collections.ArrayList]@();
+
 # wire connections can provide its signal to multiple destinations
 # make heap key values point to other keyvalues via [ref] types 
 class Heap {
@@ -62,13 +93,15 @@ Function IsProvidingValueToWire {
         [string]$line
     )
 
-    [bool]$result = $false;
-
-    $tokens = $line.Split(" ");
-
-    if ($tokens[0] -cmatch "\d" -and $tokens[1] -match "->") {
-        $result = $true;
-    }
+    . {
+        [bool]$result = $false;
+    
+        $tokens = $line.Split(" ");
+    
+        if ($tokens[0] -cmatch "\d" -and $tokens[1] -match "->") {
+            $result = $true;
+        }
+    } | Out-Null;
 
     return $result;
 }
@@ -78,12 +111,17 @@ Function IsConnectingTwoWires {
     param(
         [string]$line
     )
-    [bool]$result = $false;
-    $tokens = $line.Split(" ");
 
-    if ($tokens[0] -cmatch "^[a-z]*$" -and $tokens[1] -match "->") {
-        $result = $true;
-    }
+    . {
+        [bool]
+        $result = $false;
+        
+        $tokens = $line.Split(" ");
+    
+        if ($tokens[0] -cmatch "^[a-z]*$" -and $tokens[1] -match "->") {
+            $result = $true;
+        }
+    } | Out-Null;
 
     return $result;
 }
@@ -94,32 +132,22 @@ Function HasOperatorInLine {
         [string]$line
     )
     
+    . {
+        [bool]
+        $result = $false;
     
-    [bool]
-    $result = $false;
-
-    $tokens = $line.Split(" ");
-
-    foreach ($t in $tokens) {
-        [string]$token = $t;
-
-        if ($token -in $opNames) {
-            $result = $true;
-            break;
+        $tokens = $line.Split(" ");
+    
+        foreach ($t in $tokens) {
+            [string]$token = $t;
+    
+            if ($token -in $opNames) {
+                $result = $true;
+                break;
+            }
         }
-    }
-    return $result;
-}
+    } | Out-Null;
 
-Function IsReferenceType {
-    [OutputType([bool])]
-    param(
-        $variable
-    )
-    $result = $false;
-    if ($variable.GetType().Name.Contains("Reference")) {
-        $result = $true;
-    }
     return $result;
 }
 
@@ -128,18 +156,69 @@ Function ExprHasValue {
     param(
         [string]$line
     )
-    $result = $false;
 
-    $tokens = $line.Split(" ");
+    . {
+        [bool]
+        $result = $false;
+    
+        $tokens = $line.Split(" ");
+    
+        foreach ($token in $tokens) {
+            if ($token -match "\d" -and $line -cmatch "AND|OR|LSHIFT|RSHIFT|NOT") {
+                $result = $true;
+                break;
+            }
+        }
+    } | Out-Null;
 
-    foreach ($token in $tokens) {
-        if ($token -match "\d" -and $line -cmatch "AND|OR|LSHIFT|RSHIFT|NOT") {
-            $result = $true;
-            break;
+    return $result;
+}
+
+Function PerformOperation {
+    [OutputType([System.Void])]
+    param(
+        [System.Array]
+        $expr,
+
+        [string]
+        $target,
+
+        [Ops]
+        $ops,
+
+        [Heap]
+        $heap
+    )
+
+    $op = 
+
+    if ($expr.Count -eq 2) {
+        $result = -bnot $heap.storage[$tokens[1]];
+        $result = [uint16]::MaxValue + $result + 1;
+        $heap.storage[$tokens[3]] = $result;
+    }
+    else {
+
+        switch ($op) {
+            "$($ops.AND.name)" {
+                $result = $heap.storage[$lhoperand].value -band $heap.storage[$rhoperand].value;
+                $heap.storage[$target] = $result;
+            }
+            "$($ops.OR.name)" {
+                $result = $heap.storage[$lhoperand].value -bor $heap.storage[$rhoperand].value;
+                $heap.storage[$target] = $result;
+            }
+            "$($ops.LSHIFT.name)" {
+                $result = $heap.storage[$lhoperand].value -shl $heap.storage[$rhoperand].value;
+                $heap.storage[$target] = $result;
+            }
+            "$($ops.RSHIFT.name)" {
+                $result = $heap.storage[$lhoperand].value -shr $heap.storage[$rhoperand].value;
+                $heap.storage[$target] = $result;
+            }
         }
     }
 
-    return $result;
 }
 
 [System.Collections.ArrayList]$operationsLines = @();
@@ -161,20 +240,27 @@ Function ExprHasValue {
 # 5: repeat until each expression in the input has been evaluated and remove those expressions
 #    from the list of expressions that have yet to be evaluated 
 
-# PROBABLY HAVE TO FUCKING START OVER AGAIN!!!!!!
+# i think the key is this - gates don't provide signal to the output until
+# all inputs to the gate have signal
+
+# so if the expression is:
+# x AND y -> z
+# and x and y never had a signal applied to them yet..
+# then the expression should not get evaluated or provide signal to z yet
+
 Function PartOne {
     [Ops]$ops = [Ops]::new();
     [Heap]$heap = [Heap]::new();
 
     foreach ($l in $lines) {
         [string]$line = $l;
-        # something is fucked up with powershell functions 
-        # the only result I care about is for some reason 
-        # the last item in a fucking returned array!!!
-        $hasop = $(HasOperatorInLine($line))[-1];
-        $isconnecting = $(IsConnectingTwoWires($line))[-1];
-        $isprovidingvalue = $(IsProvidingValueToWire($line))[-1];
-        $exprHasValue = $(ExprHasValue($line))[-1];
+        
+        $instructionList.Add([Instruction]::new($line)) | Out-Null;
+
+        $hasop = $(HasOperatorInLine($line));
+        $isconnecting = $(IsConnectingTwoWires($line));
+        $isprovidingvalue = $(IsProvidingValueToWire($line));
+        $exprHasValue = $(ExprHasValue($line));
         if ($hasop -eq $true -and $exprHasValue -eq $false) {
             $operationsLines.Add($line) | Out-Null;
         }
@@ -201,18 +287,10 @@ Function PartOne {
 
             if ($token -cmatch "^[a-z]*$") {
                 if ($null -eq $heap.storage[$token]) {
-                    $heap.storage[$token] = 0;
+                    $heap.storage[$token] = [Wire]::new($token, 0)
                 }
             }
         }
-    }
-
-    #make connections
-    foreach ($instr in $connectingTwoWiresList) {
-        [string]$instr = $instr;
-        $tokens = $instr.Split(" ");
-        $heap.storage[$tokens[0]] = [ref]($heap.storage[$tokens[0]]);
-        $heap.storage[$tokens[2]] = $heap.storage[$tokens[0]];
     }
 
     # assign values to whom are instructed to be assigned values
@@ -224,161 +302,72 @@ Function PartOne {
         $value = $tokens[0];
         $var = $tokens[2];
 
-        $heap.storage[$var] = [uint16]($value);
+        $heap.storage[$var].value = [uint16]($value);
+        $heap.storage[$var].hasSignal = $true;
     }
 
-    # complete expressions that have values provided to gate inputs
-    foreach ($l in $exprsWithValue) {
-        [string]$line = $l;
+    # loop through all lines again over and over until a particular wire has signal applied to it
+    do {
+        for ($i = 0; $i -lt $instructionList.Count; $i++) {
+            [Instruction]$instr = $inst;
 
-        $tokens = $line.Split(" ");
+            $tokens = $instr.instruction.Split(" ");
 
-        [string]$expression = "$($tokens[0]) $($tokens[1]) $($tokens[2])"
+            $hasop = $(HasOperatorInLine($line));
+            $exprHasValue = $(ExprHasValue($line));
+            $isconnectingtwowires = $(IsConnectingTwoWires($line));
+            $isprovidingvalue = $(IsProvidingValueToWire($line));
 
-        $valueoperand = 0;
+            if ($hasop -eq $true -and $exprHasValue -eq $false) {
 
-        $varoperand = "";
+                $lhoperand = $tokens[0];
 
-        foreach ($t in $expression.Split(" ")) {
-            [string]$token = $t;
+                $rhoperand = $tokens[2];
 
-            if ($token -match "\d") {
-                $valueoperand = [uint16]($token);
+                [Wire]$wireLeft = $heap.storage[$lhoperand];
+                [Wire]$wireRight = $heap.storage[$rhoperand];
+
+                [string]$targetWireName = $tokens[4];
+
+                if ($heap.storage[$targetWireName].hasSignal -eq $true) {
+                    continue;
+                }
+
+                if ($wireLeft.hasSignal -eq $true -and `
+                        $wireRight.hasSignal -eq $true -and `
+                        $heap.storage[$targetWireName].hasSignal -eq $false
+                ) {
+                    # perform op to apply signal to the target wire
+                    [System.Array]
+                    $expr = $instr.Split(" -> ")[0];
+
+                    PerformOperation(
+                        $expr,
+                        $target,
+                        $ops,
+                        $heap
+                    ) | Out-Null;
+                }
+                else {
+                    continue;
+                }
             }
 
-            if ($token -cmatch "^[a-z]*$") {
-                $varoperand = $token;
+            #condition to perform operation on an instruction set that has a wire and a value in the left and/or right operands in the expression
+            elseif ($exprHasValue -eq $true) {
+
             }
+            #condition for when the line is just a value applying a signal to a wire
+            elseif ($isprovidingvalue -eq $true) {
+
+            }
+            # condition for when the line is a wire applying a signal to another wire
+            elseif ($isconnectingtwowires -eq $true) {
+
+            }
+
         }
-
-        $op = $tokens[1];
-
-        $target = $tokens[4];
-
-        switch ($op) {
-            "$($ops.AND.name)" {
-                $result = $heap.storage[$varoperand] -band $valueoperand;
-                [bool]$isRef = $(IsReferenceType($heap.storage[$target])[-1]);
-                if ($isRef) {
-                    $heap.storage[$target].Value = $result;
-                }
-                else {
-                    $heap.storage[$target] = $result;
-                }
-                break;
-            }
-            "$($ops.OR.name)" {
-                $result = $heap.storage[$varoperand] -bor $valueoperand
-                [bool]$isRef = $(IsReferenceType($heap.storage[$target])[-1]);
-                if ($isRef) {
-                    $heap.storage[$target].Value = $result;
-                }
-                else {
-                    $heap.storage[$target] = $result;
-                }
-                break;
-            }
-            "$($ops.RSHIFT.name)" {
-                $result = $heap.storage[$varoperand] -shr $valueoperand;
-                [bool]$isRef = $(IsReferenceType($heap.storage[$target])[-1]);
-                if ($isRef) {
-                    $heap.storage[$target].Value = $result;
-                }
-                else {
-                    $heap.storage[$target] = $result;
-                }
-                break;
-            }
-            "$($ops.LSHIFT.name)" {
-                $result = $heap.storage[$varoperand] -shl $valueoperand
-                [bool]$isRef = $(IsReferenceType($heap.storage[$target])[-1]);
-                if ($isRef) {
-                    $heap.storage[$target].Value = $result;
-                }
-                else {
-                    $heap.storage[$target] = $result;
-                }
-                break;
-            }
-        }
-
-    }
-
-    # parse operations
-    foreach ($line in $operationsLines) {
-        [string]$line = $line;
-
-        $tokens = $line.Split(" ");
-
-        $op = $line.Split(" ") | Where-Object {
-            $_ -match "AND|OR|LSHIFT|RSHIFT|NOT"
-        };
-
-        # if the value getting assigned is a reference type
-        # then might have some pointing issues later...
-        # not sure yet.
-        # MAKE THE THING PROVIDING VALUE NOT A REF TYPE AFTER SETTING THE TARGET???
-        switch ($op) {
-            "$($ops.AND.name)" {
-                $result = $heap.storage[$tokens[0]] -band $heap.storage[$tokens[2]]
-                [bool]$isRef = $(IsReferenceType($heap.storage[$tokens[4]])[-1]);
-                if ($isRef) {
-                    $heap.storage[$tokens[4]].Value = $result;
-                }
-                else {
-                    $heap.storage[$tokens[4]] = $result;
-                }
-                break;
-            }
-            "$($ops.OR.name)" {
-                $result = $heap.storage[$tokens[0]] -bor $heap.storage[$tokens[2]]
-                [bool]$isRef = $(IsReferenceType($heap.storage[$tokens[4]])[-1]);
-                if ($isRef) {
-                    $heap.storage[$tokens[4]].Value = $result;
-                }
-                else {
-                    $heap.storage[$tokens[4]] = $result;
-                }
-                break;
-            }
-            "$($ops.RSHIFT.name)" {
-                $result = $heap.storage[$tokens[0]] -shr $heap.storage[$tokens[2]]
-                [bool]$isRef = $(IsReferenceType($heap.storage[$tokens[4]])[-1]);
-                if ($isRef) {
-                    $heap.storage[$tokens[4]].Value = $result;
-                }
-                else {
-                    $heap.storage[$tokens[4]] = $result;
-                }
-                break;
-            }
-            "$($ops.LSHIFT.name)" {
-                $result = $heap.storage[$tokens[0]] -shl $heap.storage[$tokens[2]]
-                [bool]$isRef = $(IsReferenceType($heap.storage[$tokens[4]])[-1]);
-                if ($isRef) {
-                    $heap.storage[$tokens[4]].Value = $result;
-                }
-                else {
-                    $heap.storage[$tokens[4]] = $result;
-                }
-                break;
-            }
-            "$($ops.NOT.name)" {
-                $result = -bnot $heap.storage[$tokens[1]];
-                $result = [uint16]::MaxValue + $result + 1;
-                [bool]$isRef = $(IsReferenceType($heap.storage[$tokens[3]])[-1]);
-                if ($isRef) {
-                    $heap.storage[$tokens[3]].Value = $result;
-                }
-                else {
-                    $heap.storage[$tokens[3]] = $result;
-                }
-                break;
-            }
-        }
-    }
-
-    
+    } while ($heap.storage["a"].hasSignal -eq $false);
 
     Write-Host "[INFO]: solving part one..." -ForegroundColor Cyan
     Write-Host "[INFO]: part one answer is $answer1" -ForegroundColor Green
