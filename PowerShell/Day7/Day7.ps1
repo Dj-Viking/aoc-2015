@@ -190,7 +190,7 @@ Function PerformOperation {
         $heap
     )
 
-    $op = 
+    $op = $expr | Where-Object { $_ -cmatch "AND|OR|NOT|LSHIFT|RSHIFT" } 
 
     if ($expr.Count -eq 2) {
         $result = -bnot $heap.storage[$tokens[1]];
@@ -354,7 +354,7 @@ Function PartOne {
             }
 
             #condition to perform operation on an instruction set that has a wire and a value in the left and/or right operands in the expression
-            elseif ($exprHasValue -eq $true) {
+            elseif ($exprHasValue -eq $true) { 
 
             }
             #condition for when the line is just a value applying a signal to a wire
