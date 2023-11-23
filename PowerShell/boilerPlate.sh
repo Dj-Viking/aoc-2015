@@ -1,11 +1,6 @@
-mkdir Day$1
+pushd $1
 
-pushd Day$1
-
-touch input.txt
-touch sample.txt
-
-cat << EOF > Day$1.ps1
+cat << EOF > $1.ps1
 param(
     [Parameter(Mandatory=\$true, HelpMessage="Please enter an input filename")]
     [System.String]\$InputFilename
