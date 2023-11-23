@@ -3,6 +3,8 @@ param(
     [System.String]$InputFilename
 )
 
+[bool]$part1 = $false;
+
 [String]$answer1 = "answer goes here"
 [String]$answer2 = "answer goes here"
 [String]$myInput = ""
@@ -237,7 +239,7 @@ Function PerformOperationWithValue {
         $heap.storage[$target].hasSignal = $true;
     
         $instructionList[$index].wasCompleted = $true;
-        Write-Host "3 was COMPLETED holy fucking SHIT!!!! for this instruction $($instr.instruction) - was completed $($instr.wasCompleted)"
+        # Write-Host "3 was COMPLETED holy fucking SHIT!!!! for this instruction $($instr.instruction) - was completed $($instr.wasCompleted)"
     }
 
     # Write-Host "1 was COMPLETED holy fucking SHIT!!!! for this instruction $($instructionList[$index].instruction) - was completed $($instructionList[$index].wasCompleted)"
@@ -320,7 +322,7 @@ Function PerformOperation {
         $heap.storage[$target].value = $result;
         $heap.storage[$target].hasSignal = $true;
         $instructionList[$index].wasCompleted = $true;
-        Write-Host " 2 was COMPLETED holy fucking SHIT!!!! for this instruction $($instructionList[$index].instruction) - was completed $($instructionList[$index].wasCompleted)"
+        # Write-Host " 2 was COMPLETED holy fucking SHIT!!!! for this instruction $($instructionList[$index].instruction) - was completed $($instructionList[$index].wasCompleted)"
 
     }
     else {
@@ -390,254 +392,538 @@ Function PerformOperation {
 # and x and y never had a signal applied to them yet..
 # then the expression should not get evaluated or provide signal to z yet
 
-Function PartOne {
+Function PartOneAndTwo {
     [Ops]$ops = [Ops]::new();
     [Heap]$heap = [Heap]::new();
 
-    foreach ($l in $lines) {
-        [string]$line = $l;
-        
-        $instructionList.Add([Instruction]::new($line)) | Out-Null;
-
-        $hasop = $(HasOperatorInLine($line));
-        $isconnecting = $(IsConnectingTwoWires($line));
-        $isprovidingvalue = $(IsProvidingValueToWire($line));
-        $exprHasValue = $(ExprHasValue($line));
-        if ($hasop -eq $true -and $exprHasValue -eq $false) {
-            $operationsLines.Add($line) | Out-Null;
-        }
-        elseif ($isconnecting -eq $true) {
-            $connectingTwoWiresList.Add($line) | Out-Null;
-        }
-        elseif ($isprovidingvalue -eq $true) {
-            $valueToWireList.Add($line) | Out-Null;
-        }
-        elseif ($exprHasValue -eq $true) {
-            $exprsWithValue.Add($line)[1] | Out-Null;
-        }
-
-    }
+    if ($part1) {
+        foreach ($l in $lines) {
+            [string]$line = $l;
+            
+            $instructionList.Add([Instruction]::new($line)) | Out-Null;
     
-    # create heap
-    foreach ($l in $lines) {
-        [string]$line = $l;
-
-        $tokens = $line.Split(" ");
-
-        foreach ($t in $tokens) {
-            [string]$token = $t;
-
-            if ($token -cmatch "^[a-z]*$") {
-                if ($null -eq $heap.storage[$token]) {
-                    $heap.storage[$token] = [Wire]::new($token, 0)
-                }
-            }
-        }
-    }
-
-    # assign values to whom are instructed to be assigned values
-    foreach ($l in $valueToWireList) {
-        [string]$line = $l;
-
-        $tokens = $line.Split(" ");
-
-        $value = $tokens[0];
-        $var = $tokens[2];
-
-        $heap.storage[$var].value = [uint16]($value);
-        $heap.storage[$var].hasSignal = $true;
-
-        for ($i = 0; $i -lt $instructionList.Count; $i++) {
-            [Instruction]$instr = $instructionList[$i];
-
-            if ($line -match $instr.instruction) {
-                $instructionList[$i].wasCompleted = $true;
-            }
-        }
-    }
-
-    # loop through all lines again over and over until a particular wire has signal applied to it
-    do {
-        for ($i = 0; $i -lt $instructionList.Count; $i++) {
-            [Instruction]$instr = $instructionList[$i];
-
-            # Write-Host "instr index: $i - current instr $($instr.instruction) CURRENT WAS COMPLETE $($instr.wasCompleted)" -ForegroundColor Green;
-            # Write-Host "lx: $($heap.storage["lx"].value) a: $($heap.storage["a"].value)" -ForegroundColor Yellow;
-
-            if ($instr.wasCompleted -eq $true) {
-                $instructionList.Remove($instr);
-                Write-Host "REMOVED SOME SHIT!!! $($instr.instruction) instruction list count now $($instructionList.Count)" -ForegroundColor Magenta;
-
-                Write-Host "what the fuck is lx $($heap.storage["lx"].value)" -ForegroundColor Yellow;
-
-                break;
-            }
-
-            $tokens = $instr.instruction.Split(" ");
-
-            $hasop = $(HasOperatorInLine($instr.instruction));
-            $exprHasValue = $(ExprHasValue($instr.instruction));
-            $isconnectingtwowires = $(IsConnectingTwoWires($instr.instruction));
-            $isprovidingvalue = $(IsProvidingValueToWire($instr.instruction));
-
+            $hasop = $(HasOperatorInLine($line));
+            $isconnecting = $(IsConnectingTwoWires($line));
+            $isprovidingvalue = $(IsProvidingValueToWire($line));
+            $exprHasValue = $(ExprHasValue($line));
             if ($hasop -eq $true -and $exprHasValue -eq $false) {
-
-
-                $op = $tokens | Where-Object { $_ -cmatch "AND|NOT|LSHIFT|OR|RSHIFT" };
-
-                if ($op -cmatch "NOT") {
-                    $onlyOperand = $tokens[1];
-
-                    $target = $tokens[3];
-
-                    $expr = @("NOT", $onlyOperand);
-
-                    if ($heap.storage[$onlyOperand].hasSignal -eq $false -or $heap.storage[$target].hasSignal -eq $true) {
-                        continue;
+                $operationsLines.Add($line) | Out-Null;
+            }
+            elseif ($isconnecting -eq $true) {
+                $connectingTwoWiresList.Add($line) | Out-Null;
+            }
+            elseif ($isprovidingvalue -eq $true) {
+                $valueToWireList.Add($line) | Out-Null;
+            }
+            elseif ($exprHasValue -eq $true) {
+                $exprsWithValue.Add($line)[1] | Out-Null;
+            }
+    
+        }
+        
+        # create heap
+        foreach ($l in $lines) {
+            [string]$line = $l;
+    
+            $tokens = $line.Split(" ");
+    
+            foreach ($t in $tokens) {
+                [string]$token = $t;
+    
+                if ($token -cmatch "^[a-z]*$") {
+                    if ($null -eq $heap.storage[$token]) {
+                        $heap.storage[$token] = [Wire]::new($token, 0)
                     }
-
-                    PerformOperation -expr $expr `
-                        -target $target `
-                        -ops $ops `
-                        -heap $heap `
-                        -index $i `
-                        -instructionList $instructionList `
-                        -isBinary;
                 }
-                else {
-                    $lhoperand = $tokens[0];
+            }
+        }
     
-                    $rhoperand = $tokens[2];
+        # assign values to whom are instructed to be assigned values
+        foreach ($l in $valueToWireList) {
+            [string]$line = $l;
     
-                    [Wire]$wireLeft = $heap.storage[$lhoperand];
-                    [Wire]$wireRight = $heap.storage[$rhoperand];
+            $tokens = $line.Split(" ");
     
-                    [string]$target = $tokens[4];
+            $value = $tokens[0];
+            $var = $tokens[2];
     
-                    if ($heap.storage[$target].hasSignal -eq $true) {
-                        continue;
-                    }
+            $heap.storage[$var].value = [uint16]($value);
+            $heap.storage[$var].hasSignal = $true;
     
-                    if ($wireLeft.hasSignal -eq $true -and `
-                            $wireRight.hasSignal -eq $true -and `
-                            $heap.storage[$target].hasSignal -eq $false
-                    ) {
-                        Write-Host " 5 ONLY EXPR WITH VALUE like this $($instructionList[$i].instruction)"
+            for ($i = 0; $i -lt $instructionList.Count; $i++) {
+                [Instruction]$instr = $instructionList[$i];
     
-                        # perform op to apply signal to the target wire
-                        [System.Array]$splitInstr = $instr.instruction.Split(" -> ", [System.StringSplitOptions]::RemoveEmptyEntries);
+                if ($line -match $instr.instruction) {
+                    $instructionList[$i].wasCompleted = $true;
+                }
+            }
+        }
     
-                        [System.Array]$expr = @($splitInstr[0], $splitInstr[1], $splitInstr[2]);
+        # loop through all lines again over and over until a particular wire has signal applied to it
+        do {
+            for ($i = 0; $i -lt $instructionList.Count; $i++) {
+                [Instruction]$instr = $instructionList[$i];
+    
+                # Write-Host "instr index: $i - current instr $($instr.instruction) CURRENT WAS COMPLETE $($instr.wasCompleted)" -ForegroundColor Green;
+                # Write-Host "lx: $($heap.storage["lx"].value) a: $($heap.storage["a"].value)" -ForegroundColor Yellow;
+    
+                if ($instr.wasCompleted -eq $true) {
+                    $instructionList.Remove($instr);
+                    Write-Host "REMOVED SOME SHIT!!! $($instr.instruction) instruction list count now $($instructionList.Count)" -ForegroundColor Magenta;
+    
+                    # Write-Host "what the fuck is lx $($heap.storage["lx"].value)" -ForegroundColor Yellow;
+    
+                    break;
+                }
+    
+                $tokens = $instr.instruction.Split(" ");
+    
+                $hasop = $(HasOperatorInLine($instr.instruction));
+                $exprHasValue = $(ExprHasValue($instr.instruction));
+                $isconnectingtwowires = $(IsConnectingTwoWires($instr.instruction));
+                $isprovidingvalue = $(IsProvidingValueToWire($instr.instruction));
+    
+                if ($hasop -eq $true -and $exprHasValue -eq $false) {
+    
+    
+                    $op = $tokens | Where-Object { $_ -cmatch "AND|NOT|LSHIFT|OR|RSHIFT" };
+    
+                    if ($op -cmatch "NOT") {
+                        $onlyOperand = $tokens[1];
+    
+                        $target = $tokens[3];
+    
+                        $expr = @("NOT", $onlyOperand);
+    
+                        if ($heap.storage[$onlyOperand].hasSignal -eq $false -or $heap.storage[$target].hasSignal -eq $true) {
+                            continue;
+                        }
     
                         PerformOperation -expr $expr `
                             -target $target `
                             -ops $ops `
                             -heap $heap `
                             -index $i `
-                            -instructionList $instructionList;
+                            -instructionList $instructionList `
+                            -isBinary;
+                    }
+                    else {
+                        $lhoperand = $tokens[0];
+        
+                        $rhoperand = $tokens[2];
+        
+                        [Wire]$wireLeft = $heap.storage[$lhoperand];
+                        [Wire]$wireRight = $heap.storage[$rhoperand];
+        
+                        [string]$target = $tokens[4];
+        
+                        if ($heap.storage[$target].hasSignal -eq $true) {
+                            continue;
+                        }
+        
+                        if ($wireLeft.hasSignal -eq $true -and `
+                                $wireRight.hasSignal -eq $true -and `
+                                $heap.storage[$target].hasSignal -eq $false
+                        ) {
+                            # Write-Host " 5 ONLY EXPR WITH VALUE like this $($instructionList[$i].instruction)"
+        
+                            # perform op to apply signal to the target wire
+                            [System.Array]$splitInstr = $instr.instruction.Split(" -> ", [System.StringSplitOptions]::RemoveEmptyEntries);
+        
+                            [System.Array]$expr = @($splitInstr[0], $splitInstr[1], $splitInstr[2]);
+        
+                            PerformOperation -expr $expr `
+                                -target $target `
+                                -ops $ops `
+                                -heap $heap `
+                                -index $i `
+                                -instructionList $instructionList;
+                            
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+    
+                }
+    
+                #condition to perform operation on an instruction set that has a wire and a value in the left and/or right operands in the expression
+                elseif ($exprHasValue -eq $true) {
+    
+                    $op = $tokens | Where-Object { $_ -cmatch "AND|OR|NOT|LSHIFT|RSHIFT" };
+    
+                    if ($op -cmatch "NOT") {
+                        $target = $tokens[3];
+    
+                        $onlyOperand = $tokens[1];
                         
+                        $expr = @("NOT", $onlyOperand);
+    
+                        if ($heap.storage[$target].hasSignal -eq $true) {
+                            continue;
+                        }
+    
+                        PerformOperationWithValue -expr $expr `
+                            -target $target `
+                            -ops $ops `
+                            -heap $heap `
+                            -index $i `
+                            -instructionList $instructionList `
+                            -isBinary;
+    
+                    }
+                    else {
+                        $valueOperand = $tokens | Where-Object { $_ -match "\d" };
+        
+                        $wireOperand = @($tokens[0], $tokens[2]) | Where-Object { $_ -cmatch "^[a-z]*$" };
+        
+                        [string]$target = $tokens[4];
+    
+                        # perform op to apply signal to the target wire
+                        [System.Array]$splitInstr = $instr.instruction.Split(" -> ", [System.StringSplitOptions]::RemoveEmptyEntries);
+    
+                        [System.Array]$expr = @($splitInstr[0], $splitInstr[1], $splitInstr[2]);
+    
+                        if ($heap.storage[$target].hasSignal -eq $true -or $heap.storage[$wireOperand].hasSignal -eq $false) {
+                            continue;
+                        }
+    
+                        PerformOperationWithValue -expr $expr `
+                            -target $target `
+                            -ops $ops `
+                            -heap $heap `
+                            -index $i `
+                            -instructionList $instructionList;
+                    }
+                    
+                }
+                #condition for when the line is just a value applying a signal to a wire
+                elseif ($isprovidingvalue -eq $true) {
+    
+                    $valueOperand = $tokens | Where-Object { $_ -match "\d" };
+                    
+                    $wireOperand = @($tokens[0], $tokens[2]) | Where-Object { $_ -cmatch "^[a-z]*$" };
+                    
+                    # this instruction is skipped if it was completed already more than likely the signal is on the wire already
+                    # so just apply signal to the wire
+                    $heap.storage[$wireOperand].value = [uint16]($valueOperand);
+                    $heap.storage[$wireOperand].hasSignal = $true;
+                    $instructionList[$i].wasCompleted = $true;
+                    # Write-Host "ONLY PROVIDING VALUE LIKE THIS x -> y: $($instr.instruction)"
+                    # Write-Host "3 was COMPLETED holy fucking SHIT!!!! for this instruction $($instr.instruction) - was completed $($instr.wasCompleted)"
+    
+                }
+                # condition for when the line is a wire applying a signal to another wire
+                elseif ($isconnectingtwowires -eq $true) {
+                    if ($heap.storage[$tokens[0]].hasSignal -eq $true) {
+                        # Write-Host "WHATS THE GODDAMN INSTRUCTION HERE: $($instr.instruction)" -ForegroundColor Cyan;
+                        # Write-Host "connecting these two goddamn wires $($tokens[0]) -> $($tokens[2])" -ForegroundColor Yellow;
+                        $heap.storage[$tokens[2]].value = $heap.storage[$tokens[0]].value;
+                        $heap.storage[$tokens[2]].hasSignal = $true;
+    
+                        $instructionList[$i].wasCompleted = $true;
+                        # Write-Host "4 was COMPLETED holy fucking SHIT!!!! for this instruction $($instr.instruction) - was completed $($instr.wasCompleted)"
                     }
                     else {
                         continue;
                     }
                 }
-
-            }
-
-            #condition to perform operation on an instruction set that has a wire and a value in the left and/or right operands in the expression
-            elseif ($exprHasValue -eq $true) {
-
-                $op = $tokens | Where-Object { $_ -cmatch "AND|OR|NOT|LSHIFT|RSHIFT" };
-
-                if ($op -cmatch "NOT") {
-                    $target = $tokens[3];
-
-                    $onlyOperand = $tokens[1];
-                    
-                    $expr = @("NOT", $onlyOperand);
-
-                    if ($heap.storage[$target].hasSignal -eq $true) {
-                        continue;
-                    }
-
-                    PerformOperationWithValue -expr $expr `
-                        -target $target `
-                        -ops $ops `
-                        -heap $heap `
-                        -index $i `
-                        -instructionList $instructionList `
-                        -isBinary;
-
-                }
-                else {
-                    $valueOperand = $tokens | Where-Object { $_ -match "\d" };
     
-                    $wireOperand = @($tokens[0], $tokens[2]) | Where-Object { $_ -cmatch "^[a-z]*$" };
-    
-                    [string]$target = $tokens[4];
-
-                    # perform op to apply signal to the target wire
-                    [System.Array]$splitInstr = $instr.instruction.Split(" -> ", [System.StringSplitOptions]::RemoveEmptyEntries);
-
-                    [System.Array]$expr = @($splitInstr[0], $splitInstr[1], $splitInstr[2]);
-
-                    if ($heap.storage[$target].hasSignal -eq $true -or $heap.storage[$wireOperand].hasSignal -eq $false) {
-                        continue;
-                    }
-
-                    PerformOperationWithValue -expr $expr `
-                        -target $target `
-                        -ops $ops `
-                        -heap $heap `
-                        -index $i `
-                        -instructionList $instructionList;
-                }
-                
             }
-            #condition for when the line is just a value applying a signal to a wire
+        } while ($heap.storage["a"].hasSignal -eq $false);
+    
+        $answer1 = $heap.storage["a"].value;
+    
+        Write-Host "[INFO]: solving part one..." -ForegroundColor Cyan
+        Write-Host "[INFO]: part one answer is $answer1" -ForegroundColor Green
+
+    }
+    else {
+
+        # reset instruction set and skip the instruction that includes b because we're using the value that b got from a after part 1
+        [System.Collections.ArrayList]$instructionList = [System.Collections.ArrayList]@();
+    
+        $myInput = Read-Input "input2" $PSScriptRoot
+        $lines = Get-InputLines $myInput
+        
+        foreach ($l in $lines) {
+            [string]$line = $l;
+            
+            # if ($line -cmatch "^-> b$") { continue; }
+    
+            $instructionList.Add([Instruction]::new($line)) | Out-Null;
+    
+            $hasop = $(HasOperatorInLine($line));
+            $isconnecting = $(IsConnectingTwoWires($line));
+            $isprovidingvalue = $(IsProvidingValueToWire($line));
+            $exprHasValue = $(ExprHasValue($line));
+            if ($hasop -eq $true -and $exprHasValue -eq $false) {
+                $operationsLines.Add($line) | Out-Null;
+            }
+            elseif ($isconnecting -eq $true) {
+                $connectingTwoWiresList.Add($line) | Out-Null;
+            }
             elseif ($isprovidingvalue -eq $true) {
-
-                $valueOperand = $tokens | Where-Object { $_ -match "\d" };
-                
-                $wireOperand = @($tokens[0], $tokens[2]) | Where-Object { $_ -cmatch "^[a-z]*$" };
-                
-                # this instruction is skipped if it was completed already more than likely the signal is on the wire already
-                # so just apply signal to the wire
-                $heap.storage[$wireOperand].value = [uint16]($valueOperand);
-                $heap.storage[$wireOperand].hasSignal = $true;
-                $instructionList[$i].wasCompleted = $true;
-                Write-Host "ONLY PROVIDING VALUE LIKE THIS x -> y: $($instr.instruction)"
-                Write-Host "3 was COMPLETED holy fucking SHIT!!!! for this instruction $($instr.instruction) - was completed $($instr.wasCompleted)"
-
+                $valueToWireList.Add($line) | Out-Null;
             }
-            # condition for when the line is a wire applying a signal to another wire
-            elseif ($isconnectingtwowires -eq $true) {
-                if ($heap.storage[$tokens[0]].hasSignal -eq $true) {
-                    Write-Host "WHATS THE GODDAMN INSTRUCTION HERE: $($instr.instruction)" -ForegroundColor Cyan;
-                    Write-Host "connecting these two goddamn wires $($tokens[0]) -> $($tokens[2])" -ForegroundColor Yellow;
-                    $heap.storage[$tokens[2]].value = $heap.storage[$tokens[0]].value;
-                    $heap.storage[$tokens[2]].hasSignal = $true;
-
-                    $instructionList[$i].wasCompleted = $true;
-                    Write-Host "4 was COMPLETED holy fucking SHIT!!!! for this instruction $($instr.instruction) - was completed $($instr.wasCompleted)"
-                }
-                else {
-                    continue;
-                }
+            elseif ($exprHasValue -eq $true) {
+                $exprsWithValue.Add($line)[1] | Out-Null;
             }
-
+    
         }
-    } while ($heap.storage["a"].hasSignal -eq $false);
+    
+        # create heap
+        foreach ($l in $lines) {
+            [string]$line = $l;
+    
+            $tokens = $line.Split(" ");
+    
+            foreach ($t in $tokens) {
+                [string]$token = $t;
+    
+                if ($token -cmatch "^[a-z]*$") {
+                    if ($null -eq $heap.storage[$token]) {
+                        $heap.storage[$token] = [Wire]::new($token, 0)
+                    }
+                }
+            }
+        }
+    
+        #part 2
+        # override b with value a
+        $heap.storage["b"].value = [uint16](3176);
+        $heap.storage["b"].hasSignal = $true;
+    
+        # reset all wires including a but don't reset b
+    
+        foreach ($key in $heap.storage.Keys) {
+            if ($key -ne "b") {
+                $heap.storage[$key].value = 0;
+                $heap.storage[$key].hasSignal = $false;
+            }
+        }
+    
+        # assign values to whom are instructed to be assigned values
+        foreach ($l in $valueToWireList) {
+            [string]$line = $l;
+    
+            $tokens = $line.Split(" ");
+    
+            $value = $tokens[0];
+            $var = $tokens[2];
+    
+            $heap.storage[$var].value = [uint16]($value);
+            $heap.storage[$var].hasSignal = $true;
+    
+            for ($i = 0; $i -lt $instructionList.Count; $i++) {
+                [Instruction]$instr = $instructionList[$i];
+    
+                if ($line -match $instr.instruction) {
+                    $instructionList[$i].wasCompleted = $true;
+                }
+            }
+        }
+    
+        # loop through all lines again over and over until a particular wire has signal applied to it
+        do {
+            for ($i = 0; $i -lt $instructionList.Count; $i++) {
+                [Instruction]$instr = $instructionList[$i];
+    
+                if ($i -eq 0) {
+                    # Write-Host "CHECKING BEGINNING AFTER A BREAK!" -ForegroundColor Green
+                    # Write-Host "instruction starting with $($instr.instruction)" -ForegroundColor Cyan;
+    
+                    # Write-Host "print heap here i guess" -ForegroundColor Magenta;
+    
+                    if ($instructionList.Count -le 262) {
+                        # foreach ($key in $heap.storage.Keys) {
+                        #     Write-Host "wire $($key): $($heap.storage[$key].value) - $($heap.storage[$key].hasSignal) "; 
+                        # }
+        
+                        # Write-Host "where am i stuck dq: $($heap.storage["dq"].value) dr: $($heap.storage["dr"].value)" -ForegroundColor Red;
+                        # Write-Host "where am i stuck dq has signal: $($heap.storage["dq"].hasSignal) dr has signal: $($heap.storage["dr"].hasSignal)" -ForegroundColor Red;
+                    }
+                }
+    
+                # Write-Host "CURRENT INSTRUCTION $($instr.instruction) was complete $($instr.wasCompleted)" -ForegroundColor Red;
+                
+                if ($instr.wasCompleted -eq $true) {
+                    $instructionList.Remove($instr);
+                    Write-Host "REMOVED SOME SHIT!!! $($instr.instruction) instruction list count now $($instructionList.Count)" -ForegroundColor Magenta;
+    
+                    # Write-Host "what is aw $($heap.storage["aw"].value)" -ForegroundColor Cyan;
+                    # Write-Host "what is ay $($heap.storage["ay"].value)" -ForegroundColor Cyan;
+                    # Write-Host "what is az $($heap.storage["az"].value)" -ForegroundColor Cyan;
+    
+                    # Write-Host "what the fuck is lx $($heap.storage["lx"].value)" -ForegroundColor Yellow;
+    
+                    break;
+                }
+    
+                $tokens = $instr.instruction.Split(" ");
+    
+                $hasop = $(HasOperatorInLine($instr.instruction));
+                $exprHasValue = $(ExprHasValue($instr.instruction));
+                $isconnectingtwowires = $(IsConnectingTwoWires($instr.instruction));
+                $isprovidingvalue = $(IsProvidingValueToWire($instr.instruction));
+    
+                if ($hasop -eq $true -and $exprHasValue -eq $false) {
+    
+    
+                    $op = $tokens | Where-Object { $_ -cmatch "AND|NOT|LSHIFT|OR|RSHIFT" };
+    
+                    if ($op -cmatch "NOT") {
+                        $onlyOperand = $tokens[1];
+    
+                        $target = $tokens[3];
+    
+                        $expr = @("NOT", $onlyOperand);
+    
+                        if ($heap.storage[$onlyOperand].hasSignal -eq $false) {
+                            continue;
+                        }
+    
+                        PerformOperation -expr $expr `
+                            -target $target `
+                            -ops $ops `
+                            -heap $heap `
+                            -index $i `
+                            -instructionList $instructionList `
+                            -isBinary;
+                    }
+                    else {
+                        $lhoperand = $tokens[0];
+        
+                        $rhoperand = $tokens[2];
+        
+                        [Wire]$wireLeft = $heap.storage[$lhoperand];
+                        [Wire]$wireRight = $heap.storage[$rhoperand];
+        
+                        [string]$target = $tokens[4];
+        
+                        if ($heap.storage[$target].hasSignal -eq $true) {
+                            continue;
+                        }
+        
+                        if ($wireLeft.hasSignal -eq $true -and `
+                                $wireRight.hasSignal -eq $true -and `
+                                $heap.storage[$target].hasSignal -eq $false
+                        ) {
+                            # Write-Host " 5 ONLY EXPR WITH VALUE like this $($instructionList[$i].instruction)"
+        
+                            # perform op to apply signal to the target wire
+                            [System.Array]$splitInstr = $instr.instruction.Split(" -> ", [System.StringSplitOptions]::RemoveEmptyEntries);
+        
+                            [System.Array]$expr = @($splitInstr[0], $splitInstr[1], $splitInstr[2]);
+        
+                            PerformOperation -expr $expr `
+                                -target $target `
+                                -ops $ops `
+                                -heap $heap `
+                                -index $i `
+                                -instructionList $instructionList;
+                            
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+    
+                }
+    
+                #condition to perform operation on an instruction set that has a wire and a value in the left and/or right operands in the expression
+                elseif ($exprHasValue -eq $true) {
+    
+                    $op = $tokens | Where-Object { $_ -cmatch "AND|OR|NOT|LSHIFT|RSHIFT" };
+    
+                    if ($op -cmatch "NOT") {
+                        $target = $tokens[3];
+    
+                        $onlyOperand = $tokens[1];
+                        
+                        $expr = @("NOT", $onlyOperand);
+    
+                        if ($heap.storage[$target].hasSignal -eq $true) {
+                            continue;
+                        }
+    
+                        PerformOperationWithValue -expr $expr `
+                            -target $target `
+                            -ops $ops `
+                            -heap $heap `
+                            -index $i `
+                            -instructionList $instructionList `
+                            -isBinary;
+    
+                    }
+                    else {
+                        $valueOperand = $tokens | Where-Object { $_ -match "\d" };
+        
+                        $wireOperand = @($tokens[0], $tokens[2]) | Where-Object { $_ -cmatch "^[a-z]*$" };
+        
+                        [string]$target = $tokens[4];
+    
+                        # perform op to apply signal to the target wire
+                        [System.Array]$splitInstr = $instr.instruction.Split(" -> ", [System.StringSplitOptions]::RemoveEmptyEntries);
+    
+                        [System.Array]$expr = @($splitInstr[0], $splitInstr[1], $splitInstr[2]);
+    
+                        if ($heap.storage[$target].hasSignal -eq $true -or $heap.storage[$wireOperand].hasSignal -eq $false) {
+                            continue;
+                        }
+    
+                        PerformOperationWithValue -expr $expr `
+                            -target $target `
+                            -ops $ops `
+                            -heap $heap `
+                            -index $i `
+                            -instructionList $instructionList;
+                    }
+                    
+                }
+                #condition for when the line is just a value applying a signal to a wire
+                elseif ($isprovidingvalue -eq $true) {
+    
+                    $valueOperand = $tokens | Where-Object { $_ -match "\d" };
+                    
+                    $wireOperand = @($tokens[0], $tokens[2]) | Where-Object { $_ -cmatch "^[a-z]*$" };
+                    
+                    # this instruction is skipped if it was completed already more than likely the signal is on the wire already
+                    # so just apply signal to the wire
+                    $heap.storage[$wireOperand].value = [uint16]($valueOperand);
+                    $heap.storage[$wireOperand].hasSignal = $true;
+                    $instructionList[$i].wasCompleted = $true;
+                    # Write-Host "ONLY PROVIDING VALUE LIKE THIS x -> y: $($instr.instruction)"
+                    # Write-Host "3 was COMPLETED holy fucking SHIT!!!! for this instruction $($instr.instruction) - was completed $($instr.wasCompleted)"
+    
+                }
+                # condition for when the line is a wire applying a signal to another wire
+                elseif ($isconnectingtwowires -eq $true) {
+                    if ($heap.storage[$tokens[0]].hasSignal -eq $true) {
+                        # Write-Host "WHATS THE GODDAMN INSTRUCTION HERE: $($instr.instruction)" -ForegroundColor Cyan;
+                        # Write-Host "connecting these two goddamn wires $($tokens[0]) -> $($tokens[2])" -ForegroundColor Yellow;
+                        $heap.storage[$tokens[2]].value = $heap.storage[$tokens[0]].value;
+                        $heap.storage[$tokens[2]].hasSignal = $true;
+    
+                        $instructionList[$i].wasCompleted = $true;
+                        # Write-Host "4 was COMPLETED holy fucking SHIT!!!! for this instruction $($instr.instruction) - was completed $($instr.wasCompleted)"
+                    }
+                    else {
+                        continue;
+                    }
+                }
+    
+            }
+        } while ($heap.storage["a"].hasSignal -eq $false);
+    
+        $answer2 = $heap.storage["a"].value;
+    
+        
+    
+        Write-Host "[INFO]: solving part two..." -ForegroundColor Cyan
+        Write-Host "[INFO]: part two answer is $answer2" -ForegroundColor Green
+    }
 
-    $answer1 = $heap.storage["a"].value;
-
-    Write-Host "[INFO]: solving part one..." -ForegroundColor Cyan
-    Write-Host "[INFO]: part one answer is $answer1" -ForegroundColor Green
 }
-Function PartTwo {
-    Write-Host "[INFO]: solving part two..." -ForegroundColor Cyan
-    Write-Host "[INFO]: part two answer is $answer2" -ForegroundColor Green
-}
 
-PartOne
-PartTwo
+PartOneAndTwo
