@@ -16,7 +16,7 @@ what language will i pick this time???
 * C#
 
 # Day 6:
-* (TODO) with Typescript using DOM to visualize the problem.
+* TypeScript
 
 # Day 7: 
 * Powershell
