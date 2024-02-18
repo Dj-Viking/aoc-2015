@@ -22,7 +22,6 @@ Function Get-CharAmountInMemory {
         [int]$in_mem_amount = 0;
         
         for ($i = 0; $i -lt $line.Length; $i++) {
-            Write-Host "[$($i)] - $([int]([char]$line[$i])) - $($line[$i])" -ForegroundColor Yellow;
     
             $asciiCode = [int]([char]$line[$i]);
             if ($asciiCode -eq 34 -and ($i -eq 0 -or $i -eq ($line.Length - 1))) {
@@ -58,15 +57,17 @@ Function Get-CharAmountInMemory {
 
 
 Function PartOne {
+    
     [System.Collections.ArrayList]$charAmountList = [System.Collections.ArrayList]@();
     [System.Collections.ArrayList]$inMemAmountList = [System.Collections.ArrayList]@();
+
     foreach ($line in $lines) {
-        Write-Host "line => $line" -ForegroundColor Green;
-        Write-Host "line length $($line.Length)"
+        # Write-Host "line => $line" -ForegroundColor Green;
+        # Write-Host "line length $($line.Length)"
         $charAmountList.Add($line.Length) | Out-Null;
         $inMem = Get-CharAmountInMemory -line $line;
         $inMemAmountList.Add($inMem) | Out-Null;
-        Write-Host "in mem amount => $inMem" -ForegroundColor Cyan;
+        # Write-Host "in mem amount => $inMem" -ForegroundColor Cyan;
         
     }
     $charSum = 0;
@@ -79,7 +80,7 @@ Function PartOne {
         $inMemSum += $num;
     }
 
-    Write-Host "char sum $charSum - inmem sum $inMemSum" -ForegroundColor Magenta;
+    # Write-Host "char sum $charSum - inmem sum $inMemSum" -ForegroundColor Magenta;
 
     $answer1 = $charSum - $inMemSum;
 
@@ -88,10 +89,65 @@ Function PartOne {
     Write-Host "[INFO]: solving part one..." -ForegroundColor Cyan
     Write-Host "[INFO]: part one answer is $answer1" -ForegroundColor Green
 }
+
+Function Get-EncodedStrFromStr {
+    [OutputType([string])]
+    param(
+        [string]$line
+    )
+
+    . {
+        [string]$newstr = "`"";
+        [string]$encode = "\"
+        for ($i = 0; $i -lt $line.Length; $i++) {
+            if ($line[$i] -match "\\" -or $line[$i] -match "`"") {
+                $newstr += $encode
+            }
+            $newstr += $line[$i];
+        }
+
+        $chararr = $newstr.ToCharArray();
+
+        $chararr[-1] = "`"";
+        $chararr += "`"";
+
+        $newstr = $chararr -join "";
+
+    } | Out-Null;
+
+    return $newstr;
+}
 Function PartTwo {
+
+    # encode the line into a new string including the surrounding quotes at the beginning and the enda
+
+    [System.Collections.ArrayList]$charAmountList = [System.Collections.ArrayList]@();
+    [System.Collections.ArrayList]$encodedCharAmountList = [System.Collections.ArrayList]@();
+
+    foreach ($line in $lines) {
+
+        $charAmountList.Add($line.Length) | Out-Null;
+        $encodedStr = Get-EncodedStrFromStr -line $line;
+        # Write-Host "encoded str $encodedStr - length $($encodedStr.Length)" -ForegroundColor Magenta;
+        $encodedCharAmountList.Add($encodedStr.Length) | Out-Null;
+        
+    }
+
+
+    $charSum = 0;
+    $encCharSum = 0;
+    foreach ($num in $charAmountList) {
+        $charSum += $num;
+    }
+    foreach ($num in $encodedCharAmountList) {
+        $encCharSum += $num;
+    }
+
+    $answer2 = $encCharSum - $charSum;
+
     Write-Host "[INFO]: solving part two..." -ForegroundColor Cyan
     Write-Host "[INFO]: part two answer is $answer2" -ForegroundColor Green
 }
 
 PartOne
-# PartTwo
+PartTwo

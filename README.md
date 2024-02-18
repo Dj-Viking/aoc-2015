@@ -19,4 +19,7 @@ what language will i pick this time???
 * TypeScript
 
 # Day 7: 
-* Powershell
+* PowerShell
+
+# Day 8:
+* PowerShell
