@@ -3,6 +3,8 @@
 #include "utils.h"
 #include "constants.h"
 #include <string.h>
+#include <string>
+#include <iostream>
 #include <vector>
 
 #define PART_1 1
@@ -14,7 +16,7 @@ int main(void)
     char file_buf[FILE_SIZE_LIMIT + 1] = {0};
     unsigned long lpNumberOfBytesRead = 0;
     int read_result = 0;
-    std::vector<char *> tokens = {0};
+    std::vector<std::string> lines;
 
     const char *last_error = 0;
 
@@ -39,18 +41,32 @@ int main(void)
         return 1;
     }
 
-    char delim[] = " ";
+    std::string filestr = "";
 
-    char *ptr = strtok(file_buf, delim);
-
-    while (ptr != NULL)
+    for (int i = 0; i < strlen(file_buf); i++)
     {
-        printf("%s\n", ptr);
-
-        tokens.push_back(ptr);
-
-        ptr = strtok(NULL, delim);
+        // each character appended to string
+        filestr += file_buf[i];
+        // printf("%c", file_buf[i]);
     }
+
+    printf("\n\n");
+
+    split_and_alloc_string(&lines, filestr, "\r\n");
+
+    std::cout << filestr << std::endl;
+
+    std::cout << "vector items: ";
+
+    for (std::vector<std::string>::iterator i = lines.begin();
+         i < lines.end();
+         i++)
+    {
+        std::cout << "\n"
+                  << *i
+                  << "\n";
+    }
+    std::cout << std::endl;
 
     OutputDebugStringA((LPCSTR)file_buf);
     return 0;

@@ -1,6 +1,8 @@
 #include <Windows.h>
 #include <stdio.h>
 #include "constants.h"
+#include <vector>
+#include <string>
 // Returns the last Win32 error, in string format. Returns an empty string if there is no error.
 [[nodiscard]] const char *GetLastErrorAsString(void) noexcept
 {
@@ -69,4 +71,23 @@ int PlatformReadFile(void *file_handle, void *file_buf, unsigned long *lpNumberO
     }
 
     return result;
+}
+
+// split a string by a string separator
+void split_and_alloc_string(std::vector<std::string> *lines, const std::string &str, const char *separator)
+{
+    std::string::size_type pos = 0;
+    std::string::size_type prev_pos = 0;
+
+    while ((pos = str.find(separator, pos)) != std::string::npos)
+    {
+        std::string substr(str.substr(prev_pos, pos - prev_pos));
+
+        lines->push_back(substr);
+
+        prev_pos = ++pos;
+    }
+
+    // push last line
+    lines->push_back(str.substr(prev_pos, pos - prev_pos));
 }
