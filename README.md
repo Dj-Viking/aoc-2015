@@ -23,3 +23,6 @@ what language will i pick this time???
 
 # Day 8:
 * PowerShell
+
+# Day 9:
+* C++
