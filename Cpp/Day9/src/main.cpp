@@ -2,6 +2,8 @@
 #include <Windows.h>
 #include "utils.h"
 #include "constants.h"
+#include <string.h>
+#include <vector>
 
 #define PART_1 1
 #define SAMPLE 1
@@ -12,6 +14,7 @@ int main(void)
     char file_buf[FILE_SIZE_LIMIT + 1] = {0};
     unsigned long lpNumberOfBytesRead = 0;
     int read_result = 0;
+    std::vector<char *> tokens = {0};
 
     const char *last_error = 0;
 
@@ -36,9 +39,17 @@ int main(void)
         return 1;
     }
 
-    for (int i = 0; i < strlen(file_buf); i++)
+    char delim[] = " ";
+
+    char *ptr = strtok(file_buf, delim);
+
+    while (ptr != NULL)
     {
-        printf("%c", file_buf[i]);
+        printf("%s\n", ptr);
+
+        tokens.push_back(ptr);
+
+        ptr = strtok(NULL, delim);
     }
 
     OutputDebugStringA((LPCSTR)file_buf);
