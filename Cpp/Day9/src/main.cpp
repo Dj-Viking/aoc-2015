@@ -9,7 +9,7 @@
 int main(void)
 {
     void *h_file = 0;
-    const char *file_buf[FILE_SIZE_LIMIT + 1] = {0};
+    char file_buf[FILE_SIZE_LIMIT + 1] = {0};
     unsigned long lpNumberOfBytesRead = 0;
     int read_result = 0;
 
@@ -32,12 +32,15 @@ int main(void)
         &lpNumberOfBytesRead);
 
     if (read_result != 1)
-
     {
         return 1;
     }
 
+    for (int i = 0; i < strlen(file_buf); i++)
+    {
+        printf("%c", file_buf[i]);
+    }
+
     OutputDebugStringA((LPCSTR)file_buf);
-    OutputDebugStringA("\n");
     return 0;
 }
