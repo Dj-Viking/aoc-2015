@@ -3,6 +3,7 @@
 #include "constants.h"
 #include <vector>
 #include <string>
+#include <iostream>
 // Returns the last Win32 error, in string format. Returns an empty string if there is no error.
 [[nodiscard]] const char *GetLastErrorAsString(void) noexcept
 {
@@ -74,7 +75,7 @@ int PlatformReadFile(void *file_handle, void *file_buf, unsigned long *lpNumberO
 }
 
 // split a string by a string separator
-void split_and_alloc_string(std::vector<std::string> *lines, const std::string &str, const char *separator)
+void split_and_alloc_string(std::vector<std::string> *lines, const std::string &str, const char *separator, bool only_for_lines)
 {
     std::string::size_type pos = 0;
     std::string::size_type prev_pos = 0;
@@ -90,4 +91,31 @@ void split_and_alloc_string(std::vector<std::string> *lines, const std::string &
 
     // push last line
     lines->push_back(str.substr(prev_pos, pos - prev_pos));
+
+    if (only_for_lines)
+    {
+        // remove extra \n at the beginning of each line
+        for (std::vector<std::string>::iterator i = lines->begin();
+             i < lines->end();
+             i++)
+        {
+            i->assign(strtok((char *)i->c_str(), "\n"));
+
+            std::cout << *i << std::endl;
+        }
+    }
+}
+
+void str_trim_whitespace(std::string *str)
+{
+    str->erase(std::remove_if(str->begin(),
+                              str->end(), ::isspace),
+               str->end());
+}
+
+void str_trim_whitespace(std::vector<std::string>::iterator iter)
+{
+    iter->erase(std::remove_if(iter->begin(),
+                               iter->end(), ::isspace),
+                iter->end());
 }

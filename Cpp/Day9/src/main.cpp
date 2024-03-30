@@ -10,6 +10,14 @@
 #define PART_1 1
 #define SAMPLE 1
 
+typedef struct route
+{
+    std::string start;
+    std::string finish;
+    int distance;
+    bool visited = false;
+} Route;
+
 int main(void)
 {
     void *h_file = 0;
@@ -17,8 +25,6 @@ int main(void)
     unsigned long lpNumberOfBytesRead = 0;
     int read_result = 0;
     std::vector<std::string> lines;
-
-    const char *last_error = 0;
 
 #if SAMPLE
     h_file = GetFileHandle(sample_file_path);
@@ -50,21 +56,71 @@ int main(void)
         // printf("%c", file_buf[i]);
     }
 
-    printf("\n\n");
-
-    split_and_alloc_string(&lines, filestr, "\r\n");
+    split_and_alloc_string(&lines, filestr, "\r\n", true);
 
     std::cout << filestr << std::endl;
 
-    std::cout << "vector items: ";
+    // std::cout << "vector items: ";
+
+    std::vector<std::string> tokens;
+    std::vector<Route> allRoutes;
 
     for (std::vector<std::string>::iterator i = lines.begin();
          i < lines.end();
          i++)
     {
-        std::cout << "\n"
-                  << *i
-                  << "\n";
+        std::vector<std::string> tokens;
+        split_and_alloc_string(&tokens, *i, "=", false);
+        Route route;
+
+        for (std::vector<std::string>::iterator j = tokens.begin();
+             j < tokens.end();
+             j++)
+        {
+            try
+            {
+                int converted = std::stoi(*j);
+                if (converted != 0)
+                {
+                    route.distance = converted;
+                }
+            }
+            catch (std::invalid_argument const &ex)
+            {
+                // the tokens separated from = here couldn't be converted to integer and are the destinations _ to _
+                // parse destinations into the route struct
+                std::vector<std::string> routeNames;
+                split_and_alloc_string(&routeNames, *j, "t", false);
+                for (std::vector<std::string>::iterator k = routeNames.begin();
+                     k < routeNames.end();
+                     k++)
+                {
+                    // for some reason if k is a " " just skip it
+                    if (k->at(0) == ' ')
+                    {
+                        continue;
+                    }
+                    // remove extra o from the new split string... not sure how to split by a pattern yet
+                    if (k != routeNames.begin() && k->at(0) == 'o')
+                    {
+                        k->assign(strtok((char *)k->c_str(), "o"));
+                    }
+                    if (k == routeNames.begin())
+                    {
+                        // Using the erase, remove_if, and ::isspace functions.
+                        str_trim_whitespace(k);
+                        route.start = *k;
+                    }
+                    else
+                    {
+                        str_trim_whitespace(k);
+                        route.finish = *k;
+                    }
+                }
+                continue;
+            }
+            allRoutes.push_back(route);
+        }
     }
     std::cout << std::endl;
 
