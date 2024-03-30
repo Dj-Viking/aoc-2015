@@ -10,12 +10,17 @@
 #define PART_1 1
 #define SAMPLE 1
 
+typedef struct place
+{
+    std::string name;
+    bool visited = false;
+} Place;
+
 typedef struct route
 {
-    std::string start;
-    std::string finish;
+    Place start;
+    Place finish;
     int distance;
-    bool visited = false;
 } Route;
 
 int main(void)
@@ -109,12 +114,12 @@ int main(void)
                     {
                         // Using the erase, remove_if, and ::isspace functions.
                         str_trim_whitespace(k);
-                        route.start = *k;
+                        route.start.name = *k;
                     }
                     else
                     {
                         str_trim_whitespace(k);
-                        route.finish = *k;
+                        route.finish.name = *k;
                     }
                 }
                 continue;
@@ -123,6 +128,22 @@ int main(void)
         }
     }
     std::cout << std::endl;
+
+    // check list of structs
+
+    for (std::vector<Route>::iterator s = allRoutes.begin();
+         s < allRoutes.end();
+         s++)
+    {
+        std::cout
+            << "visited? " << (s->start.visited == 0 ? "false" : "true") << "\n"
+            << s->start.name << "\n"
+            << "->" << "\n"
+            << "visited? " << (s->finish.visited == 0 ? "false" : "true") << "\n"
+            << s->finish.name << "\n"
+            << "distance: " << s->distance << "\n"
+            << std::endl;
+    }
 
     OutputDebugStringA((LPCSTR)file_buf);
     return 0;
