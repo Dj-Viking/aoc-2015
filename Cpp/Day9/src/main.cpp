@@ -138,12 +138,19 @@ int main(void)
         std::cout
             << "visited? " << (s->start.visited == 0 ? "false" : "true") << "\n"
             << s->start.name << "\n"
-            << "->" << "\n"
+            << "->"
+            << "\n"
             << "visited? " << (s->finish.visited == 0 ? "false" : "true") << "\n"
             << s->finish.name << "\n"
             << "distance: " << s->distance << "\n"
             << std::endl;
     }
+
+    int possibleRoutes = 2 * allRoutes.size();
+
+    // make hashmap of all 3 places and their connections??
+
+    // this is BFS but completely forgot about how to do it
 
     OutputDebugStringA((LPCSTR)file_buf);
     return 0;

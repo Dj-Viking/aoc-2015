@@ -42,13 +42,13 @@
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         0);
-#endif
     if (h == INVALID_HANDLE_VALUE)
     {
         OutputDebugStringA(GetLastErrorAsString());
         printf("ooops error when getting file handle %s", GetLastErrorAsString());
         return NULL;
     }
+#endif
     return h;
 }
 
@@ -60,7 +60,6 @@ int PlatformReadFile(void *file_handle, void *file_buf, unsigned long *lpNumberO
         file_handle, file_buf,
         FILE_SIZE_LIMIT, lpNumberOfBytesRead,
         0);
-#endif
     if (result == 0)
     {
         const char *last_error = GetLastErrorAsString();
@@ -70,6 +69,7 @@ int PlatformReadFile(void *file_handle, void *file_buf, unsigned long *lpNumberO
         printf("oops couldn't open the file %s", last_error);
         return 1;
     }
+#endif
 
     return result;
 }
