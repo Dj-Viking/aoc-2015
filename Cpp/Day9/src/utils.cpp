@@ -74,36 +74,30 @@ int PlatformReadFile(void *file_handle, void *file_buf, unsigned long *lpNumberO
     return result;
 }
 
-// split a string by a string separator
-void split_and_alloc_string(std::vector<std::string> *lines, const std::string &str, const char *separator, bool only_for_lines)
+// split a string with newlines into vector of strings that were separated by that newline
+void split_and_alloc_string_lines(std::vector<std::string> *lines, std::string &str, const char *delimiter = "\r\n")
 {
-    std::string::size_type pos = 0;
-    std::string::size_type prev_pos = 0;
-
-    while ((pos = str.find(separator, pos)) != std::string::npos)
+    int pos = 0;
+    while (pos < str.size())
     {
-        std::string substr(str.substr(prev_pos, pos - prev_pos));
-
-        lines->push_back(substr);
-
-        prev_pos = ++pos;
+        pos = str.find(delimiter);
+        std::string subst = str.substr(0, pos);
+        lines->push_back(str.substr(0, pos));
+        str.erase(0, pos + strlen(delimiter));
     }
+}
+void split_and_alloc_string_in_middle(std::vector<std::string> *lines, std::string &str, const char *delimiter)
+{
+    int pos = 0;
+    // get lhs of delim
+    pos = str.find(delimiter);
+    std::string lhs = str.substr(0, pos);
+    lines->push_back(lhs);
 
-    // push last line
-    lines->push_back(str.substr(prev_pos, pos - prev_pos));
-
-    if (only_for_lines)
-    {
-        // remove extra \n at the beginning of each line
-        for (std::vector<std::string>::iterator i = lines->begin();
-             i < lines->end();
-             i++)
-        {
-            i->assign(strtok((char *)i->c_str(), "\n"));
-
-            std::cout << *i << std::endl;
-        }
-    }
+    // get rhs of delim
+    pos = pos + strlen(delimiter);
+    std::string rhs = str.substr(pos, strlen(str.c_str()) - pos);
+    lines->push_back(rhs);
 }
 
 void str_trim_whitespace(std::string *str)

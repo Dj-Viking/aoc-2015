@@ -6,6 +6,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <set>
+#include <unordered_map>
 
 #define PART_1 1
 #define SAMPLE 1
@@ -19,7 +21,7 @@ typedef struct place
 typedef struct route
 {
     Place start;
-    Place finish;
+    Place connect; // start -> connect
     int distance;
 } Route;
 
@@ -30,6 +32,7 @@ int main(void)
     unsigned long lpNumberOfBytesRead = 0;
     int read_result = 0;
     std::vector<std::string> lines;
+    std::vector<Route> allRoutes;
 
 #if SAMPLE
     h_file = GetFileHandle(sample_file_path);
@@ -52,6 +55,9 @@ int main(void)
         return 1;
     }
 
+    // done with file at this point
+    CloseHandle(h_file);
+
     std::string filestr = "";
 
     for (int i = 0; i < strlen(file_buf); i++)
@@ -61,96 +67,49 @@ int main(void)
         // printf("%c", file_buf[i]);
     }
 
-    split_and_alloc_string(&lines, filestr, "\r\n", true);
+    // if i want all the lines the file needs to have \r\n at the end of it before null terminator
+    split_and_alloc_string_lines(&lines, filestr);
 
     std::cout << filestr << std::endl;
 
     // std::cout << "vector items: ";
 
     std::vector<std::string> tokens;
-    std::vector<Route> allRoutes;
+    std::unordered_map<std::string, std::set<std::string>> routeMap;
 
-    for (std::vector<std::string>::iterator i = lines.begin();
-         i < lines.end();
-         i++)
+    /// parsing lines into usable information
+    for (std::vector<std::string>::iterator line = lines.begin();
+         line < lines.end();
+         line++)
     {
         std::vector<std::string> tokens;
-        split_and_alloc_string(&tokens, *i, "=", false);
+        split_and_alloc_string_in_middle(&tokens, *line, " = "); // ["London to Belfast", "464"]
         Route route;
 
-        for (std::vector<std::string>::iterator j = tokens.begin();
-             j < tokens.end();
-             j++)
+        std::vector<std::string> routeNames;
+        split_and_alloc_string_in_middle(&routeNames, tokens.at(0), " to "); // ["London", "Belfast"]
+
+        route.distance = std::stoi(tokens.at(1));
+        route.start.name = routeNames.at(0);
+        route.connect.name = routeNames.at(1);
+
+        allRoutes.push_back(route);
+
+        if (routeMap.find(routeNames.at(0)) != routeMap.end())
         {
-            try
-            {
-                int converted = std::stoi(*j);
-                if (converted != 0)
-                {
-                    route.distance = converted;
-                }
-            }
-            catch (std::invalid_argument const &ex)
-            {
-                // the tokens separated from = here couldn't be converted to integer and are the destinations _ to _
-                // parse destinations into the route struct
-                std::vector<std::string> routeNames;
-                split_and_alloc_string(&routeNames, *j, "t", false);
-                for (std::vector<std::string>::iterator k = routeNames.begin();
-                     k < routeNames.end();
-                     k++)
-                {
-                    // for some reason if k is a " " just skip it
-                    if (k->at(0) == ' ')
-                    {
-                        continue;
-                    }
-                    // remove extra o from the new split string... not sure how to split by a pattern yet
-                    if (k != routeNames.begin() && k->at(0) == 'o')
-                    {
-                        k->assign(strtok((char *)k->c_str(), "o"));
-                    }
-                    if (k == routeNames.begin())
-                    {
-                        // Using the erase, remove_if, and ::isspace functions.
-                        str_trim_whitespace(k);
-                        route.start.name = *k;
-                    }
-                    else
-                    {
-                        str_trim_whitespace(k);
-                        route.finish.name = *k;
-                    }
-                }
-                continue;
-            }
-            allRoutes.push_back(route);
+            // found key
+            routeMap[routeNames.at(0)].insert(routeNames.at(1));
+        }
+        else
+        {
+            // didn't find key
+            // add the key and add in it's destination
+            routeMap[routeNames.at(0)] = {};
+            routeMap[routeNames.at(0)].insert(routeNames.at(1));
         }
     }
+
     std::cout << std::endl;
-
-    // check list of structs
-
-    for (std::vector<Route>::iterator s = allRoutes.begin();
-         s < allRoutes.end();
-         s++)
-    {
-        std::cout
-            << "visited? " << (s->start.visited == 0 ? "false" : "true") << "\n"
-            << s->start.name << "\n"
-            << "->"
-            << "\n"
-            << "visited? " << (s->finish.visited == 0 ? "false" : "true") << "\n"
-            << s->finish.name << "\n"
-            << "distance: " << s->distance << "\n"
-            << std::endl;
-    }
-
-    int possibleRoutes = 2 * allRoutes.size();
-
-    // make hashmap of all 3 places and their connections??
-
-    // this is BFS but completely forgot about how to do it
 
     OutputDebugStringA((LPCSTR)file_buf);
     return 0;
