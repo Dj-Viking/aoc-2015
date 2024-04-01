@@ -6,6 +6,19 @@
 #include <unordered_map>
 #include <set>
 
+typedef struct place
+{
+    std::string name;
+    bool visited = false;
+} Place;
+
+typedef struct route
+{
+    Place start;
+    Place connect; // start -> connect
+    int distance;
+} Route;
+
 using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
 
 const char *GetLastErrorAsString(void);

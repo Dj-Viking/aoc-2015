@@ -12,19 +12,6 @@
 #define PART_1 1
 #define SAMPLE 1
 
-typedef struct place
-{
-    std::string name;
-    bool visited = false;
-} Place;
-
-typedef struct route
-{
-    Place start;
-    Place connect; // start -> connect
-    int distance;
-} Route;
-
 int main(void)
 {
     void *h_file = 0;
