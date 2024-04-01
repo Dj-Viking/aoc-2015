@@ -3,6 +3,10 @@
 #define UTILS_H
 #include <vector>
 #include <string>
+#include <unordered_map>
+#include <set>
+
+using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
 
 const char *GetLastErrorAsString(void);
 
@@ -17,5 +21,7 @@ void split_and_alloc_string_in_middle(std::vector<std::string> *array, std::stri
 void str_trim_whitespace(std::string *str);
 
 void str_trim_whitespace(std::vector<std::string>::iterator str);
+
+void debug_route_map(RouteMap map);
 
 #endif

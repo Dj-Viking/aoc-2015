@@ -1,9 +1,13 @@
 #include <Windows.h>
 #include <stdio.h>
 #include "constants.h"
-#include <vector>
-#include <string>
 #include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <set>
+
+using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
+
 // Returns the last Win32 error, in string format. Returns an empty string if there is no error.
 [[nodiscard]] const char *GetLastErrorAsString(void) noexcept
 {
@@ -98,6 +102,35 @@ void split_and_alloc_string_in_middle(std::vector<std::string> *lines, std::stri
     pos = pos + strlen(delimiter);
     std::string rhs = str.substr(pos, strlen(str.c_str()) - pos);
     lines->push_back(rhs);
+}
+
+void debug_route_map(RouteMap map)
+{
+
+    // Helper lambda function to print key-value pairs
+    auto print_key_value = [](const std::string &key, const std::set<std::string> &value)
+    {
+        std::cout << "Key:[" << key << "] Value:[" << [](const std::set<std::string> val)
+        {
+            std::string output;
+            for (std::set<std::string>::iterator item = val.begin();
+                 item != val.end();
+                 item++)
+            {
+                output += "\"";
+                output += *item;
+                if (item != val.end())
+                {
+                    output += "\",";
+                }
+            }
+
+            return output;
+        }(value) << "]\n";
+    };
+
+    for (const auto &[key, value] : map)
+        print_key_value(key, value);
 }
 
 void str_trim_whitespace(std::string *str)

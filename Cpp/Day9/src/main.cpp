@@ -25,8 +25,6 @@ typedef struct route
     int distance;
 } Route;
 
-using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
-
 int main(void)
 {
     void *h_file = 0;
@@ -118,32 +116,9 @@ int main(void)
         }
     }
 
-    // Helper lambda function to print key-value pairs
-    auto print_key_value = [](const std::string &key, const std::set<std::string> &value)
-    {
-        std::cout << "Key:[" << key << "] Value:[" << [](const std::set<std::string> val)
-        {
-            std::string output;
-            for (std::set<std::string>::iterator item = val.begin();
-                 item != val.end();
-                 item++)
-            {
-                output += "\"";
-                output += *item;
-                if (item != val.end())
-                {
-                    output += "\",";
-                }
-            }
-
-            return output;
-        }(value) << "]\n";
-    };
-
-    for (const auto &[key, value] : routeMap)
-        print_key_value(key, value);
-
     std::cout << std::endl;
+
+    debug_route_map(routeMap);
 
     OutputDebugStringA((LPCSTR)file_buf);
     return 0;
