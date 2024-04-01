@@ -94,20 +94,52 @@ int main(void)
         route.connect.name = routeNames.at(1);
 
         allRoutes.push_back(route);
+    }
 
-        if (routeMap.find(routeNames.at(0)) != routeMap.end())
+    // iterate through allRoutes to create the hashmap
+
+    for (std::vector<Route>::iterator route = allRoutes.begin();
+         route < allRoutes.end();
+         route++)
+    {
+        if (!(routeMap.find(route->start.name) != routeMap.end()))
         {
-            // found key
-            routeMap[routeNames.at(0)].insert(routeNames.at(1));
+            routeMap[route->start.name] = {};
+            routeMap[route->start.name].insert(route->connect.name);
+            routeMap[route->connect.name] = {};
+            routeMap[route->connect.name].insert(route->start.name);
         }
         else
         {
-            // didn't find key
-            // add the key and add in it's destination
-            routeMap[routeNames.at(0)] = {};
-            routeMap[routeNames.at(0)].insert(routeNames.at(1));
+            routeMap[route->connect.name].insert(route->start.name);
+            routeMap[route->start.name].insert(route->connect.name);
         }
     }
+
+    // Helper lambda function to print key-value pairs
+    auto print_key_value = [](const std::string &key, const std::set<std::string> &value)
+    {
+        std::cout << "Key:[" << key << "] Value:[" << [](const std::set<std::string> val)
+        {
+            std::string output;
+            for (std::set<std::string>::iterator item = val.begin();
+                 item != val.end();
+                 item++)
+            {
+                output += "\"";
+                output += *item;
+                if (item != val.end())
+                {
+                    output += "\",";
+                }
+            }
+
+            return output;
+        }(value) << "]\n";
+    };
+
+    for (const auto &[key, value] : routeMap)
+        print_key_value(key, value);
 
     std::cout << std::endl;
 

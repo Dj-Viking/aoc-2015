@@ -7,7 +7,7 @@ set windows_kits="C:\Program Files (x86)\Windows Kits"
 
 set visual_studio="C:\Program Files\Microsoft Visual Studio"
 
-set CL=/MP /nologo /Zi /c /EHsc
+set CL=/MP /nologo /Zi /c /EHsc /std:c++17
 
 set include_paths=/I%windows_kits%\10\Include\10.0.22621.0\shared
 set include_paths=%include_paths% /I%windows_kits%\10\Include\10.0.22621.0\um
