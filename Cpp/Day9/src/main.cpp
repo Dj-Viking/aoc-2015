@@ -25,6 +25,8 @@ typedef struct route
     int distance;
 } Route;
 
+using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
+
 int main(void)
 {
     void *h_file = 0;
@@ -75,7 +77,7 @@ int main(void)
     // std::cout << "vector items: ";
 
     std::vector<std::string> tokens;
-    std::unordered_map<std::string, std::set<std::string>> routeMap;
+    RouteMap routeMap;
 
     /// parsing lines into usable information
     for (std::vector<std::string>::iterator line = lines.begin();
