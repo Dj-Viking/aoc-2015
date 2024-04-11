@@ -1,14 +1,22 @@
 import fs from "fs";
 // @ts-check
-var str = fs
+const str = fs
     .readFileSync("C:/Users/ander/projects/aoc-2015/Cpp/Day9/src/input.txt", {
         encoding: "utf-8",
     })
     .trim();
 
 // From http://stackoverflow.com/questions/9960908/permutations-in-javascript
-var permArr = [],
-    usedChars = [];
+
+/**
+ * @type {string[][]}
+ */
+const permArr = [];
+
+/**
+ * @type {string[]}
+ */
+const placeArr = [];
 
 /**
  *
@@ -19,55 +27,76 @@ function permute(input) {
     let place = "";
     for (let i = 0; i < input.length; i++) {
         place = input.splice(i, 1)[0];
-        usedChars.push(place);
+        placeArr.push(place);
         if (input.length == 0) {
-            permArr.push(usedChars.slice());
+            permArr.push(placeArr.slice());
         }
         permute(input);
         input.splice(i, 0, place);
-        usedChars.pop();
+        placeArr.pop();
     }
     return permArr;
 }
 
-// Now back to my code
-var places = [];
-var distance = {};
+/**
+ * @type {string[]}
+ */
+const places = [];
+/**
+ * @type {Record<string, Record<string, number>>}
+ */
+const connectionDistances = {};
 
-function addDistance(place1, place2, placeDistance, last) {
+/**
+ *
+ * @param {string} place1
+ * @param {string} place2
+ * @param {number} placeDistance
+ * @param {boolean | undefined} last
+ */
+function initializeConnectionDistances(place1, place2, placeDistance, last) {
     if (places.indexOf(place1) === -1) places.push(place1);
-    distance[place1] = distance[place1] || {};
-    distance[place1][place2] = placeDistance;
+    connectionDistances[place1] = connectionDistances[place1] || {};
+    connectionDistances[place1][place2] = placeDistance;
 
-    if (!last) addDistance(place2, place1, placeDistance, true);
+    if (!last) {
+        initializeConnectionDistances(place2, place1, placeDistance, true);
+    }
 }
 
+/**
+ *
+ * @param {string[]} route
+ * @returns
+ */
 function calculateRouteDistance(route) {
-    var d = 0;
+    let d = 0;
     route.forEach(function (place, i) {
         if (i > 0) {
-            var lastPlace = route[i - 1];
-            d += distance[lastPlace][place];
+            const previous = route[i - 1];
+            d += connectionDistances[previous][place];
         }
     });
     return d;
 }
 
 str.split("\n").forEach(function (line) {
-    var match = /^([a-z]+) to ([a-z]+) = ([0-9]+)/i.exec(line);
-    var place1 = match[1];
-    var place2 = match[2];
-    var placeDistance = parseInt(match[3]);
+    const match = /^([a-z]+) to ([a-z]+) = ([0-9]+)/i.exec(line);
+    const place1 = match[1];
+    const place2 = match[2];
+    const placeDistance = parseInt(match[3]);
 
-    addDistance(place1, place2, placeDistance);
+    initializeConnectionDistances(place1, place2, placeDistance);
 });
 
-var routes = permute(places);
-console.log("routes", routes);
-var shortestDistance = calculateRouteDistance(routes[0]);
-var longestDistance = shortestDistance;
+console.log(connectionDistances);
+
+const routes = permute(places);
+// console.log("routes", routes);
+let shortestDistance = calculateRouteDistance(routes[0]);
+let longestDistance = shortestDistance;
 routes.forEach(function (route) {
-    var d = calculateRouteDistance(route);
+    const d = calculateRouteDistance(route);
     shortestDistance = Math.min(shortestDistance, d);
     longestDistance = Math.max(longestDistance, d);
 });
