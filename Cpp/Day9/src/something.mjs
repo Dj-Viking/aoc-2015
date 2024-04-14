@@ -53,6 +53,7 @@ const connectionDistances = {};
  * @param {string} place2
  * @param {number} placeDistance
  * @param {boolean | undefined} last
+ * @returns {void}
  */
 function initializeConnectionDistances(place1, place2, placeDistance, last) {
     if (places.indexOf(place1) === -1) places.push(place1);
@@ -67,7 +68,7 @@ function initializeConnectionDistances(place1, place2, placeDistance, last) {
 /**
  *
  * @param {string[]} route
- * @returns
+ * @returns {number}
  */
 function calculateRouteDistance(route) {
     let d = 0;
