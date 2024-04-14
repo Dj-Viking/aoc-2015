@@ -6,9 +6,11 @@
 #include <unordered_map>
 #include <set>
 #include <algorithm>
-#include "utils.h"
 
 using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
+using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
+using TwoDimensionalStringArray = std::vector<std::vector<std::string>>;
+using ConnectionDistanceMap = std::unordered_map<std::string, std::unordered_map<std::string, int>>;
 
 // Returns the last Win32 error, in string format. Returns an empty string if there is no error.
 [[nodiscard]] const char *GetLastErrorAsString(void) noexcept
@@ -182,7 +184,7 @@ int calculateRouteDistance(std::vector<std::string> *route, ConnectionDistanceMa
         if (place != route->begin())
         {
             auto previous = *(place -= 1);
-            auto previousRecord = (connectionDistanceMap->find(previous)->second);
+            auto previousRecord = connectionDistanceMap->find(previous)->second;
             int d = previousRecord.find(*place)->second;
             dist += d;
         }
@@ -206,9 +208,9 @@ void initializeConnectionDistances(
         places->push_back(place1);
     }
 
-    ConnectionDistanceMap distMap = {};
-    distMap.insert_or_assign(place2, placeDistance);
-    connectionDistances->insert_or_assign(place1, distMap);
+    std::unordered_map<std::string, int> distMap = {};
+    distMap.insert(std::pair<std::string, int>(place2, placeDistance));
+    connectionDistances->insert(std::pair<std::string, std::unordered_map<std::string, int>>(place1, distMap));
 
     if (!last)
     {
