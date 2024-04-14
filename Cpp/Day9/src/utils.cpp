@@ -5,6 +5,8 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
+#include <algorithm>
+#include "utils.h"
 
 using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
 
@@ -145,4 +147,71 @@ void str_trim_whitespace(std::vector<std::string>::iterator iter)
     iter->erase(std::remove_if(iter->begin(),
                                iter->end(), ::isspace),
                 iter->end());
+}
+
+void getPermutations(std::vector<std::string> *places, TwoDimensionalStringArray *out)
+{
+    std::string place = "";
+    std::vector<std::string> placeArr = {};
+    for (auto iter = places->begin();
+         iter < places->end();
+         iter++)
+    {
+        // TODO: vector splice impl??
+        // place = places->splice(i, 1)[0];
+        placeArr.push_back(place);
+        if (places->size() == 0)
+        {
+            // slice impl here
+            // out->push_back(placeArr.slice())
+        }
+        getPermutations(places, out);
+        // splice impl here
+        // placeArr.pop() ?
+    }
+}
+
+int calculateRouteDistance(std::vector<std::string> *route, ConnectionDistanceMap *connectionDistanceMap)
+{
+    int dist = 0;
+
+    for (auto place = route->begin();
+         place < route->end();
+         place++)
+    {
+        if (place != route->begin())
+        {
+            auto previous = *(place -= 1);
+            auto previousRecord = (connectionDistanceMap->find(previous)->second);
+            int d = previousRecord.find(*place)->second;
+            dist += d;
+        }
+    }
+
+    return dist;
+}
+
+void initializeConnectionDistances(
+    std::vector<std::string> *places,
+    ConnectionDistanceMap *connectionDistances,
+    std::string place1,
+    std::string place2,
+    int placeDistance,
+    bool last)
+{
+    // didn't find in vector
+    if (!(std::find(
+              places->begin(), places->end(), place1) < places->end()))
+    {
+        places->push_back(place1);
+    }
+
+    ConnectionDistanceMap distMap = {};
+    distMap.insert_or_assign(place2, placeDistance);
+    connectionDistances->insert_or_assign(place1, distMap);
+
+    if (!last)
+    {
+        initializeConnectionDistances(places, connectionDistances, place2, place1, placeDistance, true);
+    }
 }

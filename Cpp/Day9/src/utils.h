@@ -20,6 +20,14 @@ typedef struct route
 } Route;
 
 using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
+using TwoDimensionalStringArray = std::vector<std::vector<std::string>>;
+using ConnectionDistanceMap = std::unordered_map<std::string, std::unordered_map<std::string, int>>;
+
+void getPermutations(std::vector<std::string> *places, TwoDimensionalStringArray *out);
+
+void initializeConnectionDistances(std::vector<std::string> *places, ConnectionDistanceMap *connectionDistances, std::string place1, std::string place2, int placeDistance, bool last);
+
+int calculateRouteDistance(std::vector<std::string> *route, ConnectionDistanceMap *connectionDistanceMap);
 
 const char *GetLastErrorAsString(void);
 
