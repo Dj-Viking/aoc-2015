@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <set>
 #include <algorithm>
+#include <iterator>
 
 using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
 using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
@@ -235,9 +236,10 @@ int calculateRouteDistance(TwoDimensionalStringArray::iterator route, Connection
          place < route->end();
          place++)
     {
+        int index = place - route->begin();
         if (place != route->begin())
         {
-            auto previous = *(place -= 1);
+            auto previous = *(std::prev(place));
             auto previousRecord = connectionDistanceMap->find(previous)->second;
             int d = previousRecord.find(*place)->second;
             dist += d;
@@ -248,7 +250,7 @@ int calculateRouteDistance(TwoDimensionalStringArray::iterator route, Connection
 }
 
 void initializeConnectionDistances(
-    std::vector<std::string> *places,
+    std::vector<std::string> &places,
     ConnectionDistanceMap *connectionDistances,
     std::string place1,
     std::string place2,
@@ -257,9 +259,9 @@ void initializeConnectionDistances(
 {
     // didn't find in vector
     if (!(std::find(
-              places->begin(), places->end(), place1) < places->end()))
+              places.begin(), places.end(), place1) < places.end()))
     {
-        places->push_back(place1);
+        places.push_back(place1);
     }
 
     std::unordered_map<std::string, int> distMap = {};

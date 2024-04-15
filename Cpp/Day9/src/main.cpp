@@ -77,15 +77,33 @@ int main(void)
         route.connect.name = routeNames.at(1);
 
         initializeConnectionDistances(
-            &places,
+            places,
             &connectionDistances,
             route.start.name,
             route.connect.name,
             route.distance);
     }
 
+    // TODO: debug connections...something isn't being added correctly there
+
     // permutate
     getPermutations(places, placeArr, &routes);
+
+    // debug routes
+    for (auto route = routes.begin();
+        route < routes.end();
+        route++)
+    {
+        std::cout << "\n -------------- \n" << std::endl;
+        for (auto thing = route->begin();
+            thing < route->end();
+            thing++)
+        {
+            std::cout << "\n ---- \n" <<
+                "routes created -> " << *thing << "\n" << std::endl;
+        }
+
+    }
 
     // get the shortest and longest distances
     int shortestDistance = calculateRouteDistance(routes.begin(), &connectionDistances);

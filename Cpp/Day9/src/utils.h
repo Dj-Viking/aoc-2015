@@ -25,7 +25,7 @@ using ConnectionDistanceMap = std::unordered_map<std::string, std::unordered_map
 
 void getPermutations(std::vector<std::string> &places, std::vector<std::string> &placeArr, TwoDimensionalStringArray *out);
 
-void initializeConnectionDistances(std::vector<std::string> *places, ConnectionDistanceMap *connectionDistances, std::string place1, std::string place2, int placeDistance, bool last = false);
+void initializeConnectionDistances(std::vector<std::string> &places, ConnectionDistanceMap *connectionDistances, std::string place1, std::string place2, int placeDistance, bool last = false);
 
 int calculateRouteDistance(TwoDimensionalStringArray::iterator route, ConnectionDistanceMap *connectionDistanceMap);
 
