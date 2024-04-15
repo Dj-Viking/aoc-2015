@@ -1,7 +1,7 @@
 import fs from "fs";
 // @ts-check
 const str = fs
-    .readFileSync("C:/Users/ander/projects/aoc-2015/Cpp/Day9/src/input.txt", {
+    .readFileSync("C:/Users/ander/projects/aoc-2015/Cpp/Day9/src/sample.txt", {
         encoding: "utf-8",
     })
     .trim();
@@ -29,7 +29,7 @@ function permute(input) {
         place = input.splice(i, 1)[0];
         placeArr.push(place);
         if (input.length == 0) {
-            permArr.push(placeArr.slice());
+            permArr.push([...placeArr]);
         }
         permute(input);
         input.splice(i, 0, place);

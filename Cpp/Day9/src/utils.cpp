@@ -151,29 +151,88 @@ void str_trim_whitespace(std::vector<std::string>::iterator iter)
                 iter->end());
 }
 
-void getPermutations(std::vector<std::string> *places, TwoDimensionalStringArray *out)
+std::vector<std::string> spliceStrArray(
+    std::vector<std::string> &arrToSplice,
+    int startIndex,
+    int endIndex)
+{
+    std::vector<std::string> result;
+
+    std::vector<std::string>::iterator start =
+        (arrToSplice.begin() + startIndex);
+    std::vector<std::string>::iterator end =
+        arrToSplice.begin() + endIndex + 1;
+
+    if (startIndex == endIndex)
+    {
+        static std::vector<std::string> result(1);
+    }
+    else if (startIndex + 1 > endIndex)
+    {
+        static std::vector<std::string> result(startIndex);
+    }
+    else
+    {
+        static std::vector<std::string> result(endIndex - startIndex + 1);
+    }
+
+    if (start != end && *end != "")
+    {
+        result.at(0) = *start;
+        result.at(1) = *end;
+    }
+    else
+    {
+        result.at(0) = *start;
+    }
+
+    auto debugresbegin = result.begin();
+    auto debugresend = result.end() - 1;
+
+    std::string eraseResult = *(arrToSplice.erase(std::remove(start, start, *start)));
+
+    return result;
+}
+
+void getPermutations(std::vector<std::string> &places, std::vector<std::string> &placeArr, TwoDimensionalStringArray *out)
 {
     std::string place = "";
-    std::vector<std::string> placeArr = {};
-    for (auto iter = places->begin();
-         iter < places->end();
+
+    for (auto iter = places.begin();
+         iter < places.end();
          iter++)
     {
-        // TODO: vector splice impl??
-        // place = places->splice(i, 1)[0];
+        int index;
+        if (iter != places.end())
+        {
+            index = iter - places.begin();
+        }
+        else
+        {
+            // should be unreachable i hope
+            index = -1;
+        }
+        place = spliceStrArray(places, index, 1).at(0);
         placeArr.push_back(place);
-        if (places->size() == 0)
+
+        if (places.size() == 0)
         {
             // slice impl here
-            // out->push_back(placeArr.slice())
+            // out->push_back([...placeArr])
+
+            std::vector<std::string> copyArr = placeArr;
+
+            out->push_back(copyArr);
         }
-        getPermutations(places, out);
-        // splice impl here
-        // placeArr.pop() ?
+        getPermutations(places, placeArr, out);
+
+        // input.splice(i, 0, place);
+        places.insert(places.begin(), place);
+        placeArr.pop_back();
     }
 }
 
-int calculateRouteDistance(std::vector<std::string> *route, ConnectionDistanceMap *connectionDistanceMap)
+int calculateRouteDistance(TwoDimensionalStringArray::iterator route, ConnectionDistanceMap *connectionDistanceMap)
 {
     int dist = 0;
 
@@ -199,7 +258,7 @@ void initializeConnectionDistances(
     std::string place1,
     std::string place2,
     int placeDistance,
-    bool last)
+    bool last = false)
 {
     // didn't find in vector
     if (!(std::find(

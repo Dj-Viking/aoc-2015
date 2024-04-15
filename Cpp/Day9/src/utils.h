@@ -23,11 +23,14 @@ using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
 using TwoDimensionalStringArray = std::vector<std::vector<std::string>>;
 using ConnectionDistanceMap = std::unordered_map<std::string, std::unordered_map<std::string, int>>;
 
-void getPermutations(std::vector<std::string> *places, TwoDimensionalStringArray *out);
+void getPermutations(std::vector<std::string> &places, std::vector<std::string> &placeArr, TwoDimensionalStringArray *out);
 
-void initializeConnectionDistances(std::vector<std::string> *places, ConnectionDistanceMap *connectionDistances, std::string place1, std::string place2, int placeDistance, bool last);
+void initializeConnectionDistances(std::vector<std::string> *places, ConnectionDistanceMap *connectionDistances, std::string place1, std::string place2, int placeDistance, bool last = false);
 
-int calculateRouteDistance(std::vector<std::string> *route, ConnectionDistanceMap *connectionDistanceMap);
+int calculateRouteDistance(TwoDimensionalStringArray::iterator route, ConnectionDistanceMap *connectionDistanceMap);
+
+// update an array in place and return it's removed elements
+std::vector<std::string> spliceStrArray(std::vector<std::string> &arrToSplice, int startIndex, int endIndex);
 
 const char *GetLastErrorAsString(void);
 
