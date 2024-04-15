@@ -156,25 +156,12 @@ std::vector<std::string> spliceStrArray(
     int startIndex,
     int endIndex)
 {
-    std::vector<std::string> result;
-
     std::vector<std::string>::iterator start =
         (arrToSplice.begin() + startIndex);
     std::vector<std::string>::iterator end =
         arrToSplice.begin() + endIndex + 1;
 
-    if (startIndex == endIndex)
-    {
-        static std::vector<std::string> result(1);
-    }
-    else if (startIndex + 1 > endIndex)
-    {
-        static std::vector<std::string> result(startIndex);
-    }
-    else
-    {
-        static std::vector<std::string> result(endIndex - startIndex + 1);
-    }
+    static std::vector<std::string> result(endIndex - startIndex + 1);
 
     if (start != end && *end != "")
     {
@@ -212,7 +199,15 @@ void getPermutations(std::vector<std::string> &places, std::vector<std::string> 
             // should be unreachable i hope
             index = -1;
         }
-        place = spliceStrArray(places, index, 1).at(0);
+        if (index > 1)
+        {
+            place = spliceStrArray(places, 1, 1).at(0);
+        }
+        else
+        {
+
+            place = spliceStrArray(places, index, 1).at(0);
+        }
         placeArr.push_back(place);
 
         if (places.size() == 0)
