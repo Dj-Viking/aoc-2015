@@ -7,10 +7,10 @@
 #include <iostream>
 #include <vector>
 #include <set>
-#include <unordered_map>
+#include <map>
 
-#define PART_1 1
-#define SAMPLE 1
+#define SAMPLE 0
+#define DEBUG 0
 
 int main(void)
 {
@@ -23,7 +23,11 @@ int main(void)
     std::vector<std::string> permPlaceArr = {};
     std::vector<std::string> places = {};
     std::vector<std::string> placeArr = {};
-    ConnectionDistanceMap connectionDistances = {};
+
+    std::map<
+        std::string,
+        std::map<std::string, int>>
+        connectionDistances = {};
 
 #if SAMPLE
     h_file = GetFileHandle(sample_file_path);
@@ -76,34 +80,64 @@ int main(void)
         route.start.name = routeNames.at(0);
         route.connect.name = routeNames.at(1);
 
-        initializeConnectionDistances(
-            places,
-            &connectionDistances,
-            route.start.name,
-            route.connect.name,
-            route.distance);
+        if (!(connectionDistances.find(route.start.name) != connectionDistances.end()))
+        {
+            connectionDistances[route.start.name] = {};
+        }
+        connectionDistances[route.start.name][route.connect.name] = route.distance;
+
+        if (!(connectionDistances.find(route.connect.name) != connectionDistances.end()))
+        {
+            connectionDistances[route.connect.name] = {};
+        }
+        connectionDistances[route.connect.name][route.start.name] = route.distance;
+
+        // didn't find in vector
+        if (!(std::find(
+                  places.begin(), places.end(), route.start.name) < places.end()))
+        {
+            places.push_back(route.start.name);
+        }
+
+        if (!(std::find(
+                  places.begin(), places.end(), route.connect.name) < places.end()))
+        {
+            places.push_back(route.connect.name);
+        }
+
+#if DEBUG
+        debugConnectionDistances(&connectionDistances);
+        std::cout << "\n -------------- \n"
+                  << std::endl;
+#endif
     }
 
-    // TODO: debug connections...something isn't being added correctly there
+#if DEBUG
 
+    std::cout << "\n --------- debug connection map NOW ---------\n" << std::endl;
+    debugConnectionDistances(&connectionDistances);
+#endif
     // permutate
     getPermutations(places, placeArr, &routes);
 
+#if DEBUG
     // debug routes
     for (auto route = routes.begin();
-        route < routes.end();
-        route++)
+         route < routes.end();
+         route++)
     {
-        std::cout << "\n -------------- \n" << std::endl;
+        std::cout << "\n -------------- \n"
+                  << std::endl;
         for (auto thing = route->begin();
-            thing < route->end();
-            thing++)
+             thing < route->end();
+             thing++)
         {
-            std::cout << "\n ---- \n" <<
-                "routes created -> " << *thing << "\n" << std::endl;
+            std::cout << "\n ---- \n"
+                      << "routes created -> " << *thing << "\n"
+                      << std::endl;
         }
-
     }
+#endif
 
     // get the shortest and longest distances
     int shortestDistance = calculateRouteDistance(routes.begin(), &connectionDistances);

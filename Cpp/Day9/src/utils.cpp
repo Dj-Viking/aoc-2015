@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <map>
 #include <set>
 #include <algorithm>
 #include <iterator>
@@ -228,7 +229,7 @@ void getPermutations(std::vector<std::string> &places, std::vector<std::string> 
     }
 }
 
-int calculateRouteDistance(TwoDimensionalStringArray::iterator route, ConnectionDistanceMap *connectionDistanceMap)
+int calculateRouteDistance(TwoDimensionalStringArray::iterator route, std::map<std::string, std::map<std::string, int>> *connectionDistanceMap)
 {
     int dist = 0;
 
@@ -249,27 +250,18 @@ int calculateRouteDistance(TwoDimensionalStringArray::iterator route, Connection
     return dist;
 }
 
-void initializeConnectionDistances(
-    std::vector<std::string> &places,
-    ConnectionDistanceMap *connectionDistances,
-    std::string place1,
-    std::string place2,
-    int placeDistance,
-    bool last = false)
+void debugConnectionDistances(std::map<std::string, std::map<std::string, int>> *connectionDistances)
 {
-    // didn't find in vector
-    if (!(std::find(
-              places.begin(), places.end(), place1) < places.end()))
+    for (auto place = connectionDistances->begin();
+         place != connectionDistances->end();
+         place++)
     {
-        places.push_back(place1);
-    }
-
-    std::unordered_map<std::string, int> distMap = {};
-    distMap.insert(std::pair<std::string, int>(place2, placeDistance));
-    connectionDistances->insert(std::pair<std::string, std::unordered_map<std::string, int>>(place1, distMap));
-
-    if (!last)
-    {
-        initializeConnectionDistances(places, connectionDistances, place2, place1, placeDistance, true);
+        std::cout << "* " << place->first << std::endl;
+        for (auto placeMap = place->second.begin();
+             placeMap != place->second.end();
+             placeMap++)
+        {
+            std::cout << " connection -> " << placeMap->first << "\ndistance - " << placeMap->second << std::endl;
+        }
     }
 }

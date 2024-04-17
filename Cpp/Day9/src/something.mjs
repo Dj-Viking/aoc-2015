@@ -1,7 +1,7 @@
 import fs from "fs";
 // @ts-check
 const str = fs
-    .readFileSync("C:/Users/ander/projects/aoc-2015/Cpp/Day9/src/sample.txt", {
+    .readFileSync("C:/Users/ander/projects/aoc-2015/Cpp/Day9/src/input.txt", {
         encoding: "utf-8",
     })
     .trim();

@@ -3,6 +3,7 @@
 #define UTILS_H
 #include <vector>
 #include <string>
+#include <map>
 #include <unordered_map>
 #include <set>
 
@@ -19,15 +20,29 @@ typedef struct route
     int distance;
 } Route;
 
+/*
+  Record<
+    string,
+    Record<string, number>
+  >
+
+  std::map<
+    std::string,
+    std::map<std::string, int>
+  >
+
+*/
+
 using RouteMap = std::unordered_map<std::string, std::set<std::string>>;
 using TwoDimensionalStringArray = std::vector<std::vector<std::string>>;
-using ConnectionDistanceMap = std::unordered_map<std::string, std::unordered_map<std::string, int>>;
+
+void debugConnectionDistances(std::map<std::string, std::map<std::string, int>> *connectionDistances);
 
 void getPermutations(std::vector<std::string> &places, std::vector<std::string> &placeArr, TwoDimensionalStringArray *out);
 
-void initializeConnectionDistances(std::vector<std::string> &places, ConnectionDistanceMap *connectionDistances, std::string place1, std::string place2, int placeDistance, bool last = false);
+// void initializeConnectionDistances(std::vector<std::string> &places, ConnectionDistanceMap *connectionDistances, std::string place1, std::string place2, int placeDistance, bool last = false);
 
-int calculateRouteDistance(TwoDimensionalStringArray::iterator route, ConnectionDistanceMap *connectionDistanceMap);
+int calculateRouteDistance(TwoDimensionalStringArray::iterator route, std::map<std::string, std::map<std::string, int>> *connectionDistanceMap);
 
 // update an array in place and return it's removed elements
 std::vector<std::string> spliceStrArray(std::vector<std::string> &arrToSplice, int startIndex, int endIndex);
