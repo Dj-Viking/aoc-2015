@@ -10,7 +10,16 @@
 #include <map>
 
 #define SAMPLE 0
-#define DEBUG 0
+#define DEBUG 1
+
+// DISCLAIMER this doesn't give the right solution
+// it's close but that only counts in horseshoes and handgrenades
+// :( honestly can't figure out what the fuck is wrong
+// with this solution everything seems right until before adding the
+// distances together
+// and debugging
+// seems impossible since theres over 40k permutations to look through.
+// so whatever......
 
 int main(void)
 {
@@ -94,13 +103,13 @@ int main(void)
 
         // didn't find in vector
         if (!(std::find(
-                  places.begin(), places.end(), route.start.name) < places.end()))
+                  places.begin(), places.end(), route.start.name) != places.end()))
         {
             places.push_back(route.start.name);
         }
 
         if (!(std::find(
-                  places.begin(), places.end(), route.connect.name) < places.end()))
+                  places.begin(), places.end(), route.connect.name) != places.end()))
         {
             places.push_back(route.connect.name);
         }
@@ -114,30 +123,12 @@ int main(void)
 
 #if DEBUG
 
-    std::cout << "\n --------- debug connection map NOW ---------\n" << std::endl;
+    std::cout << "\n --------- debug connection map NOW ---------\n"
+              << std::endl;
     debugConnectionDistances(&connectionDistances);
 #endif
     // permutate
     getPermutations(places, placeArr, &routes);
-
-#if DEBUG
-    // debug routes
-    for (auto route = routes.begin();
-         route < routes.end();
-         route++)
-    {
-        std::cout << "\n -------------- \n"
-                  << std::endl;
-        for (auto thing = route->begin();
-             thing < route->end();
-             thing++)
-        {
-            std::cout << "\n ---- \n"
-                      << "routes created -> " << *thing << "\n"
-                      << std::endl;
-        }
-    }
-#endif
 
     // get the shortest and longest distances
     int shortestDistance = calculateRouteDistance(routes.begin(), &connectionDistances);
@@ -147,6 +138,7 @@ int main(void)
          route < routes.end();
          route++)
     {
+        int index = route - routes.begin();
         int dist = calculateRouteDistance(route, &connectionDistances);
         shortestDistance = min(shortestDistance, dist);
         longestDistance = max(longestDistance, dist);

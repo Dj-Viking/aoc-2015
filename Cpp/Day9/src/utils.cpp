@@ -237,7 +237,6 @@ int calculateRouteDistance(TwoDimensionalStringArray::iterator route, std::map<s
          place < route->end();
          place++)
     {
-        int index = place - route->begin();
         if (place != route->begin())
         {
             auto previous = *(std::prev(place));
@@ -261,7 +260,7 @@ void debugConnectionDistances(std::map<std::string, std::map<std::string, int>> 
              placeMap != place->second.end();
              placeMap++)
         {
-            std::cout << " connection -> " << placeMap->first << "\ndistance - " << placeMap->second << std::endl;
+            std::cout << " connection -> " << placeMap->first << " | distance - " << placeMap->second << std::endl;
         }
     }
 }
