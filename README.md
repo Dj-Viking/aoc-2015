@@ -25,4 +25,6 @@ what language will i pick this time???
 * PowerShell
 
 # Day 9:
-* C++
+* C++ FAIL
+    - solution stolen from reddit in JS and refactored to try and
+    rewrite it in c++ but i just gave up - taking too long to get it right....don't know when I'll get back to it
