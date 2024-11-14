@@ -1,4 +1,5 @@
 node_modules
+./Rust/Day1/main
 **/dist/*
 bin
 obj
