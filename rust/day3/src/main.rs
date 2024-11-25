@@ -89,18 +89,10 @@ fn main() {
         .unwrap()
         .chars()
         .for_each(|l| match l {
-            '^' => {
-                santa.go_up(&mut visited_santa_one);
-            },
-            'v' => {
-                santa.go_down(&mut visited_santa_one);
-            },
-            '>' => {
-                santa.go_right(&mut visited_santa_one);
-            },
-            '<' => {
-                santa.go_left(&mut visited_santa_one);
-            },
+            '^' => { santa.go_up(&mut visited_santa_one); },
+            'v' => { santa.go_down(&mut visited_santa_one); },
+            '>' => { santa.go_right(&mut visited_santa_one); },
+            '<' => { santa.go_left(&mut visited_santa_one); },
             _ => (), 
         });
     let mut at_least_once = 0;
@@ -125,11 +117,11 @@ fn main() {
         .and_modify(|e| *e += 1);
 
     let mut counter = 0;
+
     std::fs::read_to_string("input")
         .unwrap()
         .chars()
         .for_each(|c| {
-
             if counter % 2 == 0 {
                 match c {
                     '^' => santa.go_up(&mut visited),
@@ -147,7 +139,6 @@ fn main() {
                     _ => (),
                 }
             }            
-
             counter += 1;
         });
 
@@ -159,6 +150,7 @@ fn main() {
             at_least_once += 1;
         }
     } 
+
     println!("part 2: {}", at_least_once);
 
 }
