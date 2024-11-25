@@ -2,12 +2,15 @@ what language will i pick this time???
 
 # Day 1:
 * PowerShell
+* Rust
 
 # Day 2:
 * Bourne Again Shell
+* Rust
 
 # Day 3:
 * TypeScript
+* Rust
 
 # Day 4:
 * Objective-C
