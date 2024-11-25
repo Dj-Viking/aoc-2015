@@ -79,7 +79,6 @@ pub struct Visited {
 
 fn main() {
     let mut santa = Point::new(0, 0);
-    let mut robo = Point::new(0, 0);
 
     let mut visited_santa_one = HashMap::<Visited, i64>::new();
 
@@ -126,7 +125,7 @@ fn main() {
         .and_modify(|e| *e += 1);
 
     let mut counter = 0;
-    let dirs = std::fs::read_to_string("input")
+    std::fs::read_to_string("input")
         .unwrap()
         .chars()
         .for_each(|c| {
@@ -155,7 +154,7 @@ fn main() {
 
     let mut at_least_once = 0;
     
-    for (k, v) in &visited {
+    for (_k, v) in &visited {
         if *v >= 1 {
             at_least_once += 1;
         }
