@@ -72,7 +72,7 @@ impl Point {
 
 }
 
-#[derive(Hash, Eq, PartialEq, Debug, Clone)]
+#[derive(Hash, Eq, PartialEq, Debug)]
 pub struct Visited {
     coords: String,
 }
