@@ -14,6 +14,7 @@ what language will i pick this time???
 
 # Day 4:
 * Objective-C
+* Rust
 
 # Day 5:
 * C#
