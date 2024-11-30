@@ -17,8 +17,8 @@ what language will i pick this time???
 * Rust
 
 # Day 5:
-* C#
-* Rust
+* C# cheated on part 2 >:(
+* Rust part1 only for now.....
 
 # Day 6:
 * TypeScript
