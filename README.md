@@ -18,6 +18,7 @@ what language will i pick this time???
 
 # Day 5:
 * C#
+* Rust
 
 # Day 6:
 * TypeScript
