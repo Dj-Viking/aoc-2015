@@ -6,6 +6,7 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::string::String;
+use std::io;
 
 // find the "nice" strings 
 // if the string follows the rules then it's considered "nice"
@@ -15,7 +16,7 @@ pub fn insert_or_inc(key: &String, hm: &mut HashMap::<String, i64>) -> () {
         hm.insert(key.to_string(), 1);
     } else {
         hm.entry(key.to_string())
-        .and_modify(|x| *x += 1); 
+        .and_modify(|x| *x += 1);
     }
 }
 
@@ -117,7 +118,7 @@ fn main1() {
     );
     println!("{}", s);
 }
-fn main() {
+pub fn part1() {
 
     // part 1
 
@@ -150,9 +151,7 @@ fn main() {
             }
         }
 
-        // println!("validations {}, {}, {}", 
-            // sufficient_vowels, haz_double_consec_letter, doeznt_contain_ab_cd_pq_or_xy);
-        // passes all the validations? add to nice_strings vec
+        // passes all the validations?
         if has_enough_vowels(&mut letter_dict) 
             && has_double_consec_letter(&splitstr)
             && doesnt_contain_ab_cd_pq_or_xy(&splitstr)
@@ -166,5 +165,64 @@ fn main() {
     // 269 is too high!!! what am i doing wrong??
     // 255 got it :))))
     println!("part 1: {:?}", nice_strings);
+}
 
+// cheated...this problem fucking sucks!
+// kept getting 56 but some weren't making sense
+// some seemed wrong but others may have been false
+// positives somehow and I can't fucking figure it out
+// i would literally have to sit through every single
+// fucking line of text and fucking check rules on it
+// to know where I went wrong
+// fuck that!!!!!!!!!
+//
+//
+//
+//
+// FUCK THIS PROBLEM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+pub fn does_whatever_the_fuck_to_solve_this_fucking_shit(splitstr: &Vec<String>) -> bool {
+    // var appearsTwice = Enumerable.Range(
+    //         0, str.Length - 1
+    // ).Any(i => str.IndexOf(
+    //         str.Substring(i, 2), i + 2
+    //      ) >= 0);
+    // var repeats = Enumerable.Range(
+    //         0, str.Length - 2
+    // ).Any(i => str[i] == str[i + 2]);
+    false
+}
+pub fn part2() -> () {
+
+    let mut buffer = String::new();
+    let mut nice_strings = 0;
+
+    let lines: Vec<String> = std::fs::read_to_string("input")
+        .unwrap()
+        .lines()
+        .map(|x: &str| x.to_string())
+        .collect::<Vec<String>>();
+
+    for i in 0..lines.len() {
+
+        let mut letter_dict = HashMap::<String, i64>::new();
+        let splitstr: Vec<String> = lines[i].split("")
+            // take out empty string entries
+            .filter_map(|x| { 
+                if !x.to_string().is_empty() { 
+                    Some(x.to_string()) 
+                } else { None } 
+            })
+            .collect();
+        
+
+        if does_whatever_the_fuck_to_solve_this_fucking_shit(&splitstr){ 
+            nice_strings += 1;
+        }
+        // panic!();
+    }
+    println!("part 2: {}", nice_strings);
+}
+fn main() {
+    part1();
+    //part2();
 }

@@ -68,8 +68,15 @@ namespace Day5
         public static bool IsNiceString2(string str)
         {
             // cheated...this problem fucking sucks!
-            var appearsTwice = Enumerable.Range(0, str.Length - 1).Any(i => str.IndexOf(str.Substring(i, 2), i + 2) >= 0);
-            var repeats = Enumerable.Range(0, str.Length - 2).Any(i => str[i] == str[i + 2]);
+            var appearsTwice = Enumerable.Range(
+                    0, str.Length - 1
+            ).Any(i => str.IndexOf(
+                    str.Substring(i, 2), i + 2
+                 ) >= 0);
+            var repeats = Enumerable.Range(
+                    0, str.Length - 2
+            ).Any(i => str[i] == str[i + 2]);
+
             return appearsTwice && repeats;
 
         }
