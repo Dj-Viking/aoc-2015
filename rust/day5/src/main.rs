@@ -133,7 +133,6 @@ fn main() {
     for i in 0..lines.len() {
 
         let mut letter_dict = HashMap::<String, i64>::new();
-        let mut pass = false;
 
         let splitstr: Vec<String> = lines[i].split("")
             // take out empty string entries
@@ -158,12 +157,9 @@ fn main() {
             && has_double_consec_letter(&splitstr)
             && doesnt_contain_ab_cd_pq_or_xy(&splitstr)
         {
-            pass = true;
-        }
-
-        if pass {
             nice_strings += 1;
         }
+
 
         // break;
     }
