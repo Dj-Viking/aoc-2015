@@ -83,13 +83,9 @@ function applyInstruction(line: string, part2?: boolean) {
 
     const rowStart: number = Number(lhArea.split(",")[0]);
     const colStart: number = Number(lhArea.split(",")[1]);
+
     const rowEnd: number = Number(rhArea.split(",")[0]);
     const colEnd: number = Number(rhArea.split(",")[1]);
-
-    const rowRange: number = rowEnd - rowStart;
-    const columnRange: number = colEnd - colStart;
-
-    // console.log("row range => ", rowRange, "\n", "col range => ", columnRange);
 
     for (let row = rowStart; row <= rowEnd; row++) {
         for (let col = colStart; col <= colEnd; col++) {
