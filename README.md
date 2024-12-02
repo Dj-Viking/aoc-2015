@@ -22,6 +22,7 @@ what language will i pick this time???
 
 # Day 6:
 * TypeScript
+* Rust
 
 # Day 7: 
 * PowerShell
