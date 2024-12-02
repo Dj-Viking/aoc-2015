@@ -2,13 +2,15 @@
 pub struct LED {
     x: usize,
     y: usize,
+    brightness: u64,
     lit: bool,
 }
 impl LED {
-    pub fn new(x: usize, y: usize, lit: bool) -> Self {
+    pub fn new(x: usize, y: usize, lit: bool, brightness: u64) -> Self {
         Self {
             x: x,
             y: y,
+            brightness: brightness,
             lit: lit
         }
     }
@@ -31,7 +33,7 @@ fn main() {
     for y in 0..1000 {
         grid.push(Vec::<LED>::new());
         for x in 0..1000 {
-            grid[y].push(LED::new(x,y,false));
+            grid[y].push(LED::new(x,y,false, 0));
         }
     }
     // for y in 0..3 {
@@ -83,6 +85,7 @@ error: look-around, including look-ahead and look-behind, is not supported
             for y in (*start_y as i32)..(*end_y as i32 + 1) {
                 for x in (*start_x as i32)..(*end_x as i32 + 1) {
                     grid[y as usize][x as usize].lit = true;
+                    grid[y as usize][x as usize].brightness += 1;
                     // println!("gridyx {:?}", grid[y as usize][x as usize]);
                 }
             }
@@ -106,6 +109,9 @@ error: look-around, including look-ahead and look-behind, is not supported
             for y in (*start_y as i32)..(*end_y as i32 + 1) {
                 for x in (*start_x as i32)..(*end_x as i32 + 1) {
                     grid[y as usize][x as usize].lit = false;
+                    if grid[y as usize][x as usize].brightness > 0 {
+                        grid[y as usize][x as usize].brightness -= 1;
+                    }
                     // println!("gridyx {:?}", grid[y as usize][x as usize]);
                     // panic!();
                 }
@@ -126,6 +132,7 @@ error: look-around, including look-ahead and look-behind, is not supported
             for y in (*start_y as i32)..(*end_y as i32 + 1) {
                 for x in (*start_x as i32)..(*end_x as i32 + 1) {
                     grid[y as usize][x as usize].lit = !grid[y as usize][x as usize].lit;
+                    grid[y as usize][x as usize].brightness += 2;
                     // println!("gridyx {:?}", grid[y as usize][x as usize]);
                     // panic!();
                 }
@@ -140,6 +147,7 @@ error: look-around, including look-ahead and look-behind, is not supported
             if grid[y][x].lit {
                 on_count += 1;
             }
+            brightness += grid[y][x].brightness;
         }
     }
     println!("part1: {}", on_count);
