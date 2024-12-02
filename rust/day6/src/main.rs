@@ -26,7 +26,7 @@ pub fn split_with_trim(strr: &String, delim: &str) -> Vec<String> {
         .collect::<Vec<String>>()
 }
 
-pub fn part1() -> () {
+fn main() {
     let mut grid: Vec<Vec<LED>> = vec!();
     for y in 0..1000 {
         grid.push(Vec::<LED>::new());
@@ -134,6 +134,7 @@ error: look-around, including look-ahead and look-behind, is not supported
     }
 
     let mut on_count = 0;
+    let mut brightness = 0;
     for y in 0..grid.len() {
         for x in 0..grid[y].len() {
             if grid[y][x].lit {
@@ -142,9 +143,5 @@ error: look-around, including look-ahead and look-behind, is not supported
         }
     }
     println!("part1: {}", on_count);
-
-}
-
-fn main() {
-    part1();
+    println!("part2: {}", brightness);
 }
