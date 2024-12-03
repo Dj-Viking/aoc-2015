@@ -43,7 +43,7 @@ fn main() {
     //     }
     // }
 
-    let mut lines: Vec<String> = vec!();
+    //let lines: Vec<String> = vec!();
     // lines.push("turn on 0,0 through 2,2".to_string());
     let lines: Vec<String> = std::fs::read_to_string("input").expect("the file to open plz lol")
         .lines()
